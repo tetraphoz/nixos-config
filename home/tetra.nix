@@ -116,8 +116,8 @@
   home.file.".doom.d".source =
     ../dotfiles/doom.d;
 
-  home.file.".emacs.d".source =
-    ../dotfiles/.emacs.d;
+  #home.file.".emacs.d".source =
+  #  ../dotfiles/.emacs.d;
 
 
   xdg.configFile."kitty".source =
