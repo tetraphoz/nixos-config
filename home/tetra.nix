@@ -27,6 +27,7 @@
     dunst
     picom
     redshift
+    xidlehook
     slock
 
     # Browsers
