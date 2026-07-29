@@ -107,35 +107,42 @@
 
   programs.home-manager.enable = true;
 
+  home.file.".xinitrc".source =
+    ../dotfiles/xinitrc;
+
   home.file.".xmonad".source =
-    ../../dotfiles/.xmonad;
+    ../dotfiles/xmonad;
 
   home.file.".doom.d".source =
-    ../../dotfiles/.doom.d;
+    ../dotfiles/doom.d;
 
   home.file.".emacs.d".source =
-    ../../dotfiles/.emacs.d;
+    ../dotfiles/.emacs.d;
+
 
   xdg.configFile."kitty".source =
-    ../../dotfiles/kitty;
+    ../dotfiles/kitty;
 
   xdg.configFile."rofi".source =
-    ../../dotfiles/rofi;
+    ../dotfiles/rofi;
 
   xdg.configFile."dunst".source =
-    ../../dotfiles/dunst;
+    ../dotfiles/dunst;
 
   xdg.configFile."picom".source =
-    ../../dotfiles/picom;
+    ../dotfiles/picom;
 
   xdg.configFile."redshift".source =
-    ../../dotfiles/redshift;
+    ../dotfiles/redshift;
 
   xdg.configFile."mpd".source =
-    ../../dotfiles/mpd;
+    ../dotfiles/mpd;
 
   xdg.configFile."ncmpcpp".source =
-    ../../dotfiles/ncmpcpp;
+    ../dotfiles/ncmpcpp;
+
+  xdg.configFile."wal".source =
+    ../dotfiles/wal;
 
   home.stateVersion = "26.05";
 }
