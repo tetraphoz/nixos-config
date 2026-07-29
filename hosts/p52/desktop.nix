@@ -19,6 +19,7 @@
     gohufont
     tamzen
     fira-code
+    cozette
   ];
 
   # Font configuration
