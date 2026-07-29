@@ -50,7 +50,7 @@
 
     ardour
     hydrogen
-    helvum
+    crosspipe
     qpwgraph
     mpd
     ncmpcpp
