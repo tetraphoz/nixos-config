@@ -132,9 +132,6 @@
   xdg.configFile."picom".source =
     ../dotfiles/picom;
 
-  xdg.configFile."redshift".source =
-    ../dotfiles/redshift;
-
   xdg.configFile."mpd".source =
     ../dotfiles/mpd;
 
