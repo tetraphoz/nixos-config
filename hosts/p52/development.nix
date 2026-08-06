@@ -25,6 +25,7 @@
     cmake
     ninja
     pkg-config
+    libtool
 
     # Languages
     rustup
@@ -32,11 +33,11 @@
 
     python3
     uv
-    pipx
+    #pipx
 
-    nodejs
-    nodePackages.npm
-    nodePackages.typescript
+    #nodejs
+    #npm
+    typescript
 
     php
     phpPackages.composer

@@ -1,8 +1,29 @@
 { config, pkgs, ... }:
 
 {
+
+  services.xserver = {
+
+    enable = true;
+
+    displayManager.startx.enable = true;
+
+    xkb.layout = "us";
+    xkb.variant = "altgr-intl";
+
+    windowManager.xmonad = {
+      enable = true;
+      enableContribAndExtras = true;
+    };
+  };
+
   # Desktop applications and themes
   environment.systemPackages = with pkgs; [
+    
+    xinit
+    arandr
+    brightnessctl
+
     # GTK configuration tool
     lxappearance
 
@@ -11,7 +32,7 @@
     numix-icon-theme-circle
 
     # GTK themes / engines
-    flat-color-icons
+    #flat-color-icons
     gtk-engine-murrine
 
     # Fonts
@@ -20,7 +41,21 @@
     tamzen
     fira-code
     cozette
+
+    # Secrets
+    gnupg
+    pass
+    slock
   ];
+
+  programs.gnupg.agent = {
+    enable = true;
+    pinentryPackage = with pkgs; pinentry-all;
+    enableSSHSupport = true;
+  };
+
+
+  programs.slock.enable = true;
 
   # Font configuration
   fonts = {

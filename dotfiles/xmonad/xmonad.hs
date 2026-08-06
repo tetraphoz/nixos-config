@@ -87,7 +87,8 @@ myKeys = [
         , ("<Print>",   spawn "scrot -s")
         , ("M-S-l",     spawn "slock")
         , ("M-d",       spawn "rofi -modi run,drun,window -show")
-        , ("M-S-u",     spawn "wal -a 65 --saturate 0.5 -i  ~/media/img/wallpapers")
+        , ("M-p",       spawn "/home/tetra/.local/bin/rofipass")
+        , ("M-S-u",     spawn "wal -a 65 --saturate 0.5 -i  /media/img/wallpapers")
 
         -- Scratchpads
         , ("M-<Backspace>", namedScratchpadAction myScratchPads "terminal")
@@ -109,14 +110,14 @@ myKeys = [
         , ("M-S-m m", spawn "mpc toggle")
         , ("M-S-m S-,", spawn "mpc prev")
         , ("M-S-m S-.", spawn "mpc next")
-        , ("<XF86AudioMute>",   spawn "pactl set-sink-mute @DEFAULT_SINK@ toggle")  -- Bug prevents it from toggling correctly in 12.04.
-        , ("<XF86AudioMicMute>",   spawn "pactl set-source-mute @DEFAULT_SOURCE@ toggle")  -- Bug prevents it from toggling correctly in 12.04.
-        , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ -5%")
-        , ("<XF86AudioRaiseVolume>", spawn "pactl set-sink-volume @DEFAULT_SINK@ +5%")
+        , ("<XF86AudioMute>",           spawn "wpctl set-sink-mute @DEFAULT_SINK@ toggle")  -- Bug prevents it from toggling correctly in 12.04.
+        , ("<XF86AudioMicMute>",        spawn "wpctl set-source-mute @DEFAULT_SOURCE@ toggle")  -- Bug prevents it from toggling correctly in 12.04.
+        , ("<XF86AudioLowerVolume>",    spawn "wpctl set-sink-volume @DEFAULT_SINK@ -5%")
+        , ("<XF86AudioRaiseVolume>",    spawn "wpctl set-sink-volume @DEFAULT_SINK@ +5%")
 
         -- Backlight
-        , ("<XF86MonBrightnessUp>", spawn "xbacklight -inc 5")
-        , ("<XF86MonBrightnessDown>", spawn "xbacklight -dec 5")
+        , ("<XF86MonBrightnessUp>", spawn "brightnessctl set 5%+")
+        , ("<XF86MonBrightnessDown>", spawn "brightnessctl set 5%-")
 
         -- Actions
         -- , ("M-c", selectWindow def >>= (`whenJust` killWindow))

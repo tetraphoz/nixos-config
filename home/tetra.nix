@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   ...
 }:
@@ -19,6 +20,7 @@
     fd
     jq
     yq
+    btop
 
     # WM
 
@@ -28,16 +30,16 @@
     picom
     redshift
     xidlehook
-    slock
+    pywal16
 
     # Browsers
 
-    firefox
     librewolf
 
     # Files
 
     thunar
+    ranger
 
     # Development
 
@@ -84,6 +86,7 @@
     wireshark
     nmap
     tcpdump
+    qbittorrent
 
     # Sync
 
@@ -102,17 +105,41 @@
     rclone
   ];
 
-  programs.git.enable = true;
+  programs.git = {
+    enable = true;
+  
+    userName = "tetraphoz";
+    userEmail = "tetraphosphorus@gmail.com";
+  
+    extraConfig = {
+      init.defaultBranch = "main";
+      pull.rebase = false;
+    };
+  };
 
   programs.zsh.enable = true;
+
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+  };
 
   programs.home-manager.enable = true;
 
   home.file.".xinitrc".source =
     ../dotfiles/xinitrc;
 
-  home.file.".xmonad".source =
-    ../dotfiles/xmonad;
+  home.file.".xmonad" = {
+      source = ../dotfiles/xmonad;
+      recursive = true;
+      force = true;
+  };
+
+  home.activation.makeXmonadWritable =
+     config.lib.dag.entryAfter [ "writeBoundary" ] ''
+     chmod -R u+w $HOME/.xmonad
+  '';
+
 
   home.file.".doom.d".source =
     ../dotfiles/doom.d;
@@ -139,8 +166,15 @@
   xdg.configFile."ncmpcpp".source =
     ../dotfiles/ncmpcpp;
 
-  xdg.configFile."wal".source =
-    ../dotfiles/wal;
+  home.activation.copyWal =
+     config.lib.dag.entryAfter [ "writeBoundary" ] ''
+       mkdir -p $HOME/.config/wal
+       cp -r ${../dotfiles/wal}/* $HOME/.config/wal/
+       chmod -R u+w $HOME/.config/wal
+  '';
+
+  # xdg.configFile."wal".source =
+  #   ../dotfiles/wal;
 
   home.stateVersion = "26.05";
 }

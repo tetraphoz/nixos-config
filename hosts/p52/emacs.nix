@@ -24,6 +24,8 @@
     aspell
     aspellDicts.en
     aspellDicts.es
+
+    direnv
   ];
 
 

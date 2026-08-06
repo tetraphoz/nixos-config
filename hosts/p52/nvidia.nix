@@ -1,10 +1,11 @@
 { config, pkgs, ... }:
 
 {
+  
   # Load NVIDIA driver for X11
   services.xserver.videoDrivers = [
     "nvidia"
-    "modesetting"
+  #  "modesetting"
   ];
 
 
@@ -37,6 +38,8 @@
 
     # Install nvidia-settings
     nvidiaSettings = true;
+
+    package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
   };
 
 

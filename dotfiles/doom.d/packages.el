@@ -69,7 +69,6 @@
 (package! typst-ts-mode)
 (package! polymode)
 
-(package! emacs-w3m)
 
 (package! org-krita
   :recipe (:host github

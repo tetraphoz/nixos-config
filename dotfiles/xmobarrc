@@ -1,6 +1,6 @@
 Config {
     overrideRedirect = True,
-    font =         "Cozette 12",
+    font =         "Tamzen 6",
     bgColor =      "black",
     fgColor =      "#646464",
     position =     Bottom,

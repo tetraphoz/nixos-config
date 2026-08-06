@@ -11,6 +11,7 @@
     # Hardware / desktop
     ./desktop.nix
     ./power.nix
+    ./nvidia.nix
 
     # Development environment
     ./development.nix
@@ -23,6 +24,9 @@
 
     # Audio
     ./audio.nix
+
+    # Games
+    ./games.nix
   ];
 
 

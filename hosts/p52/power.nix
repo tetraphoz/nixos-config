@@ -5,29 +5,25 @@
 
   # Intel thermal/power management
   services.throttled = {
-    enable = true;
+    enable = false;
 
     extraConfig = ''
       [GENERAL]
-      Enabled=True
+      Enabled: True
+      Autoreload: True
 
-      # Prevent excessive turbo throttling
-      PL1=45
-      PL2=60
+      [AC]
+      Update_rate_s: 5
+      PL1_Tdp_W: 44
 
-      # Time window for turbo power
-      Clamp=1
+      [BATTERY]
+      Update_rate_s: 30
 
       # Undervolt values
       # Adjust after testing stability
       CORE=-100
       CACHE=-100
       GPU=-50
-      SYSTEM_AGENT=0
-      ANALOGIO=0
-
-      # Battery behavior
-      Battery=1
     '';
   };
 
