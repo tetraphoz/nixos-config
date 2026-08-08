@@ -24,6 +24,7 @@
 
     # Audio
     ./audio.nix
+    ./music-production.nix
 
     # Games
     ./games.nix
