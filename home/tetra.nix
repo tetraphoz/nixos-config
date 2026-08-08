@@ -59,6 +59,7 @@
     ncmpcpp
     cava
     reaper
+    spotify
 
     # Video
 
