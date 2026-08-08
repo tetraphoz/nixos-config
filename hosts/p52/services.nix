@@ -30,11 +30,12 @@
     user = "tetra";
 
     #TODO: update file locations
-    dataDir = "/home/tetra/Sync";
+    dataDir = "/media/syncthing/";
 
     configDir = "/home/tetra/.config/syncthing";
   };
 
+   services.locate.enable = true;
 
   environment.systemPackages = with pkgs; [
     syncthing
