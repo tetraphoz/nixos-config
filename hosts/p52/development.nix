@@ -16,6 +16,9 @@
     jq
     yq
     zoxide
+    yazi
+    plocate
+    ncdu
 
     # Build tools
     gcc
@@ -33,6 +36,7 @@
 
     python3
     uv
+    pyright
     #pipx
 
     #nodejs
@@ -44,6 +48,9 @@
 
     jdk17
     kotlin
+
+    # Ai
+    aider-chat
 
     # Databases
     sqlite
@@ -60,6 +67,9 @@
     man-pages-posix
     pandoc
   ];
+
+  programs.direnv.enable = true;
+  programs.direnv.nix-direnv.enable = true;
 
   programs.git = {
     enable = true;

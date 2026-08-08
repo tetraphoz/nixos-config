@@ -106,24 +106,27 @@
     rclone
   ];
 
-  programs.git = {
-    enable = true;
+  programs.git.settings = {
+    user.name = "tetraphoz";
+    user.email = "tetraphosphorus@gmail.com";
   
-    userName = "tetraphoz";
-    userEmail = "tetraphosphorus@gmail.com";
-  
-    extraConfig = {
-      init.defaultBranch = "main";
-      pull.rebase = false;
-    };
+    init.defaultBranch = "main";
+    pull.rebase = false;
   };
 
   programs.zsh.enable = true;
+
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
+  };
 
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
   };
+
+  programs.browserpass.enable = true;
 
   programs.home-manager.enable = true;
 
