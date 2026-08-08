@@ -40,7 +40,7 @@
   environment.systemPackages = with pkgs; [
     pavucontrol
     qjackctl
-    helvum
+    crosspipe
     easyeffects
     mpc
   ];

@@ -22,7 +22,7 @@
     #
     # Synths
     #
-    surge-XT
+    surge-xt
     yoshimi
     zynaddsubfx
     cardinal
