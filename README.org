@@ -1,0 +1,123 @@
+* NixOS Flake + Doom Emacs Dotfiles
+
+This repository contains my NixOS flake, host configuration, home configuration, and dotfiles.  
+It’s set up for a desktop-focused workflow using *Doom Emacs*, *XMonad*, and a collection of terminal and X11 app configs.
+
+** Overview
+
+- *NixOS system config* under =hosts/=
+- *Home Manager config* under =home/=
+- *Dotfiles* under =dotfiles/=
+- *Doom Emacs config* in =dotfiles/doom.d/=
+
+** Repository Layout
+
+#+begin_src text
+.
+├── dotfiles
+│   ├── doom.d
+│   │   ├── config.el
+│   │   ├── custom.el
+│   │   ├── init.el
+│   │   └── packages.el
+│   ├── dunst
+│   ├── kitty
+│   ├── mpd
+│   ├── mpv
+│   ├── ncmpcpp
+│   ├── picom
+│   ├── rofi
+│   ├── wal
+│   ├── xinitrc
+│   ├── xmobarrc
+│   └── xmonad
+├── flake.nix
+├── flake.lock
+├── home
+│   └── tetra.nix
+└── hosts
+    └── p52
+        ├── configuration.nix
+        ├── hardware-configuration.nix
+        ├── desktop.nix
+        ├── development.nix
+        ├── emacs.nix
+        └── ...
+#+end_src
+
+** What’s Included
+
+*** Doom Emacs
+Doom Emacs is configured in:
+
+- =dotfiles/doom.d/init.el=
+- =dotfiles/doom.d/config.el=
+- =dotfiles/doom.d/packages.el=
+- =dotfiles/doom.d/custom.el=
+
+*** Desktop Configuration
+This repo includes configs for:
+
+- *XMonad*
+- *XMobarb*
+- *Xinit*
+- *Dunst*
+- *Picom*
+- *Rofi*
+- *Kitty*
+- *MPV*
+- *MPD*
+- *ncmpcpp*
+
+*** Pywal Integration
+Some files are linked to Pywal-generated cache files, for example:
+
+- =dotfiles/dunst/dunstrc=
+- =dotfiles/xmonad/lib/Colors.hs=
+
+** System Structure
+
+*** =flake.nix=
+Defines the NixOS flake inputs and outputs.
+
+*** =hosts/p52=
+Host-specific NixOS configuration for the machine =p52=.
+
+*** =home/tetra.nix=
+Home Manager configuration for the user =tetra=.
+
+*** =dotfiles/=
+Contains application configs that are symlinked or managed through the flake/home setup.
+
+** Usage
+
+*** Build / switch the system
+#+begin_src bash
+sudo nixos-rebuild switch --flake .#p52
+#+end_src
+
+*** Build Home Manager config
+If using Home Manager separately:
+#+begin_src bash
+home-manager switch --flake .#tetra
+#+end_src
+
+*** Update flake inputs
+#+begin_src bash
+nix flake update
+#+end_src
+
+** Notes
+
+- This setup is tailored to my own workflow and hardware.
+- Some configs depend on generated theme files from *pywal*.
+- Symlinks in the repo may point to cache paths like =/home/tetra/.cache/wal/...=.
+
+** Goals
+
+This flake is meant to provide:
+
+- reproducible system configuration
+- a consistent desktop environment
+- a manageable Doom Emacs setup
+- easy dotfile syncing across machines
