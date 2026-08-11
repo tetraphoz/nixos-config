@@ -7,7 +7,7 @@
     # DAWs
     #
     ardour
-    renoise
+    reaper
 
     #
     # Drum machines
@@ -27,6 +27,7 @@
     zynaddsubfx
     cardinal
     bespokesynth
+    vital
 
     #
     # Samplers
@@ -34,7 +35,7 @@
     sfizz
 
     #
-    # Plugins
+    # Effects / Plugins
     #
     calf
     lsp-plugins
@@ -43,22 +44,28 @@
     dragonfly-reverb
 
     #
-    # Audio editing
+    # Windows VST compatibility
     #
-    audacity
+    yabridge
+    yabridgectl
+    wineWow64Packages.stable
 
     #
-    # Analysis
+    # Routing / JACK / PipeWire
     #
+    crosspipe
+    qpwgraph
+    patchage
+    carla
+
+    #
+    # Analysis / Editing
+    #
+    audacity
     sonic-visualiser
 
     #
-    # MIDI / routing
-    #
-    patchage
-
-    #
-    # Experimental audio
+    # Experimental / DSP
     #
     puredata
     supercollider

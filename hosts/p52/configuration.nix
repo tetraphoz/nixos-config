@@ -84,6 +84,19 @@
   nixpkgs.config.allowUnfree = true;
 
 
+  # Deal with libraries
+  programs.nix-ld = {
+    enable = true;
+  
+    libraries = with pkgs; [
+      libX11
+      libXext
+      alsa-lib
+      stdenv.cc.cc
+    ];
+  };
+
+
   # Useful base utilities
   environment.systemPackages = with pkgs; [
     git

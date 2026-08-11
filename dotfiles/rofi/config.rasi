@@ -1,14 +1,14 @@
 /*-*- mode: css; -*-*/
 configuration {
-show-icons:         true;
-icon-theme:         "Numix";
-font:		      "GohuFont Powerline 8";
-cycle:              true;
-/* hide-scrollbar:     true; */
-disable-history:    false;
-modi:               "run";
-display-drun:       "apps";
-//theme: "gruvbox-dark-soft";
-column: 2;
+    show-icons:        true;
+    icon-theme:        "Numix";
+    font:              "Tamzen 8";
+    cycle:             true;
+    /* hide-scrollbar: true; */
+    disable-history:   false;
+    modi:              "run";
+    display-drun:      "apps";
+    //theme:           "gruvbox-dark-soft";
+    column:            2;
 }
 @import "~/.cache/wal/colors-rofi-dark.rasi"
