@@ -215,6 +215,14 @@
     :key (lambda () (my/auth-source-secret "generativelanguage.google.com"))
     :stream t))
 
+(use-package! aidermacs
+  :bind (("C-c a" . aidermacs-transient-menu))
+  :config
+  (setenv "OPENAI_API_KEY" (my/auth-source-secret "api.openai.com"))
+  :custom
+  (aidermacs-default-chat-mode 'architect)
+  (aidermacs-default-model "gpt-5-mini"))
+
 ;; ---------------------------------------------------------------------------
 ;; Programming / LSP / DAP
 ;; ---------------------------------------------------------------------------
