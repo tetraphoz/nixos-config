@@ -183,7 +183,7 @@ myKeys =
 
       -- Rofi
     , ("M-d", spawn "rofi -modi run,drun,window -show drun")
-    , ("M-w", spawn "rofi -modi window -show window")
+    -- , ("M-w", spawn "rofi -modi window -show window")
 
       -- Password manager
     , ("M-p", spawn "rofipass")
@@ -225,13 +225,13 @@ myKeys =
     , ("M-a",
         selectWindow def >>= (`whenJust` windows . W.focusWindow))
 
-      -- Copy window to all workspaces
-    , ("M-c",
-        windows copyToAll)
+    --   -- Copy window to all workspaces
+    -- , ("M-c",
+    --     windows copyToAll)
 
-      -- Remove window from all other workspaces
-    , ("M-S-C",
-        killAllOtherCopies)
+    --   -- Remove window from all other workspaces
+    -- , ("M-S-C",
+    --     killAllOtherCopies)
 
       -- Float/unfloat focused window
     , ("M-C-t",
