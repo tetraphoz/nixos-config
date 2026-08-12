@@ -4,6 +4,7 @@
 
 (package! jinx :recipe  (:host github :repo "minad/jinx" :files (:defaults
                                                                  "jinx-mod.c" "emacs-module.h")))
+(package! aidermacs)
 (package! org-edna)
 (package! ement)
 (package! benchmark-init)
