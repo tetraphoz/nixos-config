@@ -35,12 +35,17 @@
     lxappearance
     colloid-gtk-theme
 
+
     # Icons
     numix-icon-theme
     numix-icon-theme-circle
 
     # GTK engines
     gtk-engine-murrine
+
+    # File manager
+    thunar-volman
+    polkit_gnome
 
     # Fonts
     ibm-plex
@@ -60,6 +65,29 @@
   programs.dconf.enable = true;
 
   #
+  # Screen sharing
+  #
+  programs.obs-studio = {
+    enable = true;
+
+    # optional Nvidia hardware acceleration
+    package = (
+      pkgs.obs-studio.override {
+        cudaSupport = true;
+      }
+    );
+
+    plugins = with pkgs.obs-studio-plugins; [
+      wlrobs
+      obs-backgroundremoval
+      obs-pipewire-audio-capture
+      obs-vaapi #optional AMD hardware acceleration
+      obs-gstreamer
+      obs-vkcapture
+    ];
+  };
+
+  #
   # GTK portals
   #
   xdg.portal = {
@@ -73,7 +101,7 @@
   };
 
   #
-  # GPG / Pass
+  # GPG / Pass / Security
   #
   programs.gnupg.agent = {
     enable = true;

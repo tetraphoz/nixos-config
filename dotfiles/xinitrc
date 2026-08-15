@@ -33,4 +33,6 @@ redshift -l 25.686613:-100.316116 &
 
 #[ ! -s ~/.config/mpd/pid ] && mpd &
 
+polkit-gnome-authentication-agent-1 &
+
 exec dbus-run-session xmonad

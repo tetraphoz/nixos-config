@@ -35,7 +35,14 @@
     configDir = "/home/tetra/.config/syncthing";
   };
 
-   services.locate.enable = true;
+  # Files
+  services.udisks2.enable = true;
+  services.gvfs.enable = true;
+  services.tumbler.enable = true;
+
+  security.polkit.enable = true;
+
+  services.locate.enable = true;
 
   environment.systemPackages = with pkgs; [
     syncthing

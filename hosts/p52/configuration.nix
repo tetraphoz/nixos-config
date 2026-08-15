@@ -71,6 +71,7 @@
       "video"
       "docker"
       "libvirtd"
+      "dialout"
     ];
 
     shell = pkgs.zsh;

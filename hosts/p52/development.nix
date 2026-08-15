@@ -66,6 +66,9 @@
     man-pages
     man-pages-posix
     pandoc
+
+    # Language servers
+    ccls
   ];
 
   programs.direnv.enable = true;
