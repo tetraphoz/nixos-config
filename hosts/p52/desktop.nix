@@ -35,13 +35,15 @@
     lxappearance
     colloid-gtk-theme
 
-
     # Icons
     numix-icon-theme
     numix-icon-theme-circle
 
     # GTK engines
     gtk-engine-murrine
+
+    # Screnshots
+    maim
 
     # File manager
     thunar-volman
