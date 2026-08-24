@@ -16,27 +16,27 @@
 ;; ---------------------------------------------------------------------------
 ;; Core editor behavior
 ;; ---------------------------------------------------------------------------
-(use-package! emacs
-  :defer t
-  :config
-  (setq-default evil-escape-key-sequence "jk")
-  (setq evil-respect-visual-line-mode t)
-  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
-  (setq mouse-wheel-progressive-speed nil)
-  (setq-default line-spacing .15)
-  (setq doom-theme 'ef-dream
-        doom-font (font-spec :family "Fira Code" :weight 'medium :size 11)
-        doom-variable-pitch-font (font-spec :family "IBM Plex Serif" :weight 'normal)
-        display-line-numbers-type 't
-        global-auto-revert-mode t
-        browse-url-firefox-program "librewolf"
-        user-full-name "tetraphz"
-        user-mail-address "tetraphosphorus@gmail.com"
-        confirm-kill-emacs nil
-        search-default-mode #'char-fold-to-regexp)
-  ;; Add global npm bin directory to Emacs's PATH
-  (setenv "PATH" (concat (getenv "PATH") ":/home/tetra/.local/bin"))
-  (add-to-list 'exec-path "/home/tetra/.local/bin"))
+(setq-default evil-escape-key-sequence "jk")
+(setq evil-respect-visual-line-mode t)
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
+(setq mouse-wheel-progressive-speed nil)
+(setq-default line-spacing 0.15)
+
+;; Theme / fonts / global variables
+(setq doom-theme 'ef-dream
+      doom-font (font-spec :family "Fira Code" :weight 'medium :size 11)
+      doom-variable-pitch-font (font-spec :family "IBM Plex Serif" :weight 'normal)
+      display-line-numbers-type t
+      global-auto-revert-mode t
+      browse-url-firefox-program "librewolf"
+      user-full-name "tetraphz"
+      user-mail-address "tetraphosphorus@gmail.com"
+      confirm-kill-emacs nil
+      search-default-mode #'char-fold-to-regexp)
+
+;; Add global npm bin directory to Emacs's PATH
+(setenv "PATH" (concat (getenv "PATH") ":/home/tetra/.local/bin"))
+(add-to-list 'exec-path "/home/tetra/.local/bin")
 
 (use-package! evil
   :defer t
@@ -61,10 +61,6 @@
   (setq dired-omit-files
         (concat dired-omit-files "\\|^\\..*$")))
 
-;; (use-package! dirvish
-;;   :config
-;;   (setq dired-listing-switches
-;;         "-l --almost-all --human-readable --group-directories-first --no-group"))
 
 (use-package! treemacs
   :defer t
@@ -112,36 +108,127 @@
 ;; ---------------------------------------------------------------------------
 ;; Org mode
 ;; ---------------------------------------------------------------------------
+(defconst my/org-root-dir "/media/syncthing/gtd-new/")
+(defconst my/org-system-dir (expand-file-name "sistema/" my/org-root-dir))
+(defconst my/org-ideas-dir (expand-file-name "ideas/" my/org-root-dir))
+(defconst my/org-inbox-file (expand-file-name "inbox.org" my/org-system-dir))
+(defconst my/org-tasks-file (expand-file-name "tareas.org" my/org-system-dir))
+(defconst my/org-projects-file (expand-file-name "proyectos.org" my/org-system-dir))
+(defconst my/org-agenda-file (expand-file-name "agenda.org" my/org-system-dir))
+(defconst my/org-routines-file (expand-file-name "rutinas.org" my/org-system-dir))
+(defconst my/org-project-ideas-file (expand-file-name "proyectos.org" my/org-ideas-dir))
+(defconst my/org-learning-file (expand-file-name "aprendizaje.org" my/org-ideas-dir))
+(defconst my/org-journal-dir (expand-file-name "journal/" my/org-root-dir))
+
+(defun my/org-agenda-skip-if-in-section (section)
+  "Skip the current subtree when it lives under SECTION."
+  (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+        (path (org-get-outline-path t t)))
+    (when (member section path)
+      subtree-end)))
+
+(defun my/org-agenda-skip-unless-in-section (section)
+  "Skip the current subtree unless it lives under SECTION."
+  (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+        (path (org-get-outline-path t t)))
+    (unless (member section path)
+      subtree-end)))
+
+(defun my/org-agenda-skip-active-backlog ()
+  "Skip paused tasks and anything already on the calendar."
+  (or (my/org-agenda-skip-if-in-section "En pausa / revisar semanalmente")
+      (org-agenda-skip-entry-if 'scheduled 'deadline)))
+
 (use-package! org
   :defer t
   :config
-  (setq org-directory "/media/syncthing/gtd-new"
+  (setq org-directory my/org-root-dir
         org-log-done 'time
         org-log-redeadline 'time
         org-log-reschedule 'time
-        org-default-notes-file (concat org-directory "/gtd.org")
-        org-agenda-files '("/media/syncthing/gtd-new/accion.org"
-                           "/media/syncthing/gtd-new/gtd.org"
-                           "/media/syncthing/gtd-new/responsabilidades.org"
-                           "/media/syncthing/gtd-new/tickler.org"
-                           "/media/syncthing/gtd-new/cel.org"
-                           "/media/syncthing/gtd-new/lap.org")
-        org-refile-targets '(("/media/syncthing/gtd-new/gtd.org" :maxlevel . 2)
-                             ("/media/syncthing/gtd-new/accion.org" :level . 1)
-                             ("/media/syncthing/gtd-new/tickler.org" :maxlevel . 1)))
+        org-default-notes-file my/org-inbox-file
+        org-agenda-files (list my/org-inbox-file
+                               my/org-tasks-file
+                               my/org-projects-file
+                               my/org-agenda-file
+                               my/org-routines-file)
+        org-agenda-window-setup 'current-window
+        org-agenda-start-with-log-mode t
+        org-deadline-warning-days 7
+        org-agenda-block-separator ?─
+        org-refile-use-outline-path 'file
+        org-outline-path-complete-in-steps nil
+        org-refile-targets `((,my/org-tasks-file :maxlevel . 3)
+                             (,my/org-projects-file :maxlevel . 2)
+                             (,my/org-agenda-file :maxlevel . 1)
+                             (,my/org-project-ideas-file :maxlevel . 2)
+                             (,my/org-learning-file :maxlevel . 2))
+        org-capture-templates
+        `(("i" "Inbox / tarea" entry
+           (file+headline ,my/org-inbox-file "Tareas")
+           "* %?\n%U\n")
+          ("I" "Inbox / idea" entry
+           (file+headline ,my/org-inbox-file "Ideas")
+           "* %?\n%U\n")
+          ("A" "Inbox / aprendizaje" entry
+           (file+headline ,my/org-inbox-file "Aprendizaje")
+           "* %?\n%U\n")
+          ("l" "Inbox / link" entry
+           (file+headline ,my/org-inbox-file "Links")
+           "* %?\n%U\n%a\n")
+          ("d" "Diario de sueños" entry
+           (file+datetree "/media/syncthing/roam/20250918133306-suenos.org")
+           "* %U\n%?"))
+        org-agenda-custom-commands
+        `(("g" "GTD dashboard"
+           ((agenda ""
+                    ((org-agenda-span 1)
+                     (org-agenda-overriding-header "Hoy")))
+            (tags "LEVEL=2"
+                  ((org-agenda-files (list ,my/org-inbox-file))
+                   (org-agenda-overriding-header "Inbox por procesar")))
+            (todo "NEXT"
+                  ((org-agenda-files (list ,my/org-tasks-file))
+                   (org-agenda-skip-function '(my/org-agenda-skip-if-in-section "En pausa / revisar semanalmente"))
+                   (org-agenda-overriding-header "Siguientes acciones")))
+            (todo "TODO"
+                  ((org-agenda-files (list ,my/org-tasks-file))
+                   (org-agenda-skip-function #'my/org-agenda-skip-active-backlog)
+                   (org-agenda-overriding-header "Backlog activo")))
+            (tags "STATUS=\"active\""
+                  ((org-agenda-files (list ,my/org-projects-file))
+                   (org-agenda-overriding-header "Proyectos activos")))))
+          ("n" "Siguientes acciones"
+           ((todo "NEXT"
+                  ((org-agenda-files (list ,my/org-tasks-file))
+                   (org-agenda-skip-function '(my/org-agenda-skip-if-in-section "En pausa / revisar semanalmente"))
+                   (org-agenda-overriding-header "Todas las siguientes acciones")))))
+          ("r" "Revisión semanal"
+           ((agenda ""
+                    ((org-agenda-span 7)
+                     (org-agenda-start-on-weekday 1)
+                     (org-agenda-overriding-header "Semana")))
+            (tags "LEVEL=2"
+                  ((org-agenda-files (list ,my/org-inbox-file))
+                   (org-agenda-overriding-header "Inbox")))
+            (tags "STATUS=\"active\""
+                  ((org-agenda-files (list ,my/org-projects-file))
+                   (org-agenda-overriding-header "Proyectos activos")))
+            (todo "NEXT|TODO"
+                  ((org-agenda-files (list ,my/org-tasks-file))
+                   (org-agenda-skip-function '(my/org-agenda-skip-if-in-section "En pausa / revisar semanalmente"))
+                   (org-agenda-overriding-header "Tareas activas")))
+            (todo "NEXT|TODO"
+                  ((org-agenda-files (list ,my/org-tasks-file))
+                   (org-agenda-skip-function '(my/org-agenda-skip-unless-in-section "En pausa / revisar semanalmente"))
+                   (org-agenda-overriding-header "En pausa / revisar semanalmente")))
+            (tags "STATUS=\"paused\""
+                  ((org-agenda-files (list ,my/org-projects-file))
+                   (org-agenda-overriding-header "Proyectos en pausa")))))))
 
-  (setq org-capture-templates
-        `(("a" "Acción" entry (file "/media/syncthing/gtd-new/accion.org") "* TODO %? ")
-          ("l" "Link" entry (file "/media/syncthing/gtd-new/gtd.org") "* %?\n %U\n %a\n")
-          ("b" "Inbox de mi computadora" entry (file "/media/syncthing/gtd-new/lap.org") "* %?")
-          ("d" "Diario de sueños" entry (file+datetree "/media/syncthing/roam/20250918133306-suenos.org") "* %U \n%?")
-          ("t" "Por hacer" entry (file+headline "/media/syncthing/gtd-new/porhacer.org" "* HOLD "))))
 
-  (setq org-image-align 'center)
-  (setq org-image-actual-width '(0.6))
-
-  (add-to-list 'org-modules 'org-habit t)
-  (add-to-list 'org-modules 'org-depend t)
+  (add-to-list 'org-modules 'org-habit)
+  (add-to-list 'org-modules 'org-depend)
 
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -160,13 +247,14 @@
 (use-package! org-journal
   :defer t
   :config
-  (add-to-list 'org-agenda-files org-journal-dir)
-  (setq org-journal-enable-agenda-integration t
+  (setq org-journal-dir my/org-journal-dir
+        org-journal-enable-agenda-integration t
         org-journal-file-type 'weekly
         org-journal-file-format "%Y%m%d.org"
         org-icalendar-store-UID t
         org-icalendar-include-todo "all"
-        org-icalendar-combined-agenda-file "/media/syncthing/gtd-new/cal.ics"))
+        org-icalendar-combined-agenda-file "/media/syncthing/gtd-new/cal.ics")
+  (add-to-list 'org-agenda-files org-journal-dir))
 
 (use-package! org-node
   :defer t
@@ -210,7 +298,9 @@
 ;; ---------------------------------------------------------------------------
 (after! gptel
   (setq gptel-default-mode 'org-mode)
-  (setq gptel-api-key (lambda () (my/auth-source-secret "api.openai.com")))
+  (gptel-make-openai "ChatGPT"
+    :key (lambda () (my/auth-source-secret "api.openai.com"))
+    :stream t)
   (gptel-make-gemini "Gemini"
     :key (lambda () (my/auth-source-secret "generativelanguage.google.com"))
     :stream t))
@@ -221,7 +311,7 @@
   (setenv "OPENAI_API_KEY" (my/auth-source-secret "api.openai.com"))
   :custom
   (aidermacs-default-chat-mode 'architect)
-  (aidermacs-default-model "gpt-5-mini"))
+  (aidermacs-default-model "gpt-5.6-luna"))
 
 ;; ---------------------------------------------------------------------------
 ;; Programming / LSP / DAP
@@ -247,7 +337,7 @@
 (use-package! emacs-pet
   :defer t
   :config
-  (add-hook 'python-base-mode-hook 'pet-mode -10))
+  (add-hook 'python-base-mode-hook #'pet-mode))
 
 (use-package! eglot-java
   :defer t

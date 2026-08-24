@@ -8,11 +8,11 @@
      "a9028cd93db14a5d6cdadba789563cb90a97899c4da7df6f51d58bb390e54031" default))
  '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
  '(org-agenda-files
-   '("/media/syncthing/gtd-new/accion.org" "/media/syncthing/gtd-new/gtd.org"
-     "/media/syncthing/gtd-new/responsabilidades.org"
-     "/media/syncthing/gtd-new/tickler.org" "/media/syncthing/gtd-new/cel.org"
-     "/media/syncthing/gtd-new/lap.org"
-     "/media/syncthing/gtd-new/journal/20260608.org"))
+   '("/media/syncthing/gtd-new/sistema/inbox.org"
+     "/media/syncthing/gtd-new/sistema/tareas.org"
+     "/media/syncthing/gtd-new/sistema/proyectos.org"
+     "/media/syncthing/gtd-new/sistema/agenda.org"
+     "/media/syncthing/gtd-new/sistema/rutinas.org"))
  '(package-selected-packages '(tidal ultra-scroll))
  '(package-vc-selected-packages
    '((ultra-scroll :vc-backend Git :url "https://github.com/jdtsmith/ultra-scroll"))))
