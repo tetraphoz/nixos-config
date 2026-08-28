@@ -34,7 +34,7 @@
       confirm-kill-emacs nil
       search-default-mode #'char-fold-to-regexp)
 
-;; Add global npm bin directory to Emacs's PATH
+;; Add local bin directory to Emacs's PATH
 (setenv "PATH" (concat (getenv "PATH") ":/home/tetra/.local/bin"))
 (add-to-list 'exec-path "/home/tetra/.local/bin")
 
@@ -108,7 +108,7 @@
 ;; ---------------------------------------------------------------------------
 ;; Org mode
 ;; ---------------------------------------------------------------------------
-(defconst my/org-root-dir "/media/syncthing/gtd-new/")
+(defconst my/org-root-dir "/media/syncthing/gtd/")
 (defconst my/org-system-dir (expand-file-name "sistema/" my/org-root-dir))
 (defconst my/org-ideas-dir (expand-file-name "ideas/" my/org-root-dir))
 (defconst my/org-inbox-file (expand-file-name "inbox.org" my/org-system-dir))
@@ -118,6 +118,9 @@
 (defconst my/org-routines-file (expand-file-name "rutinas.org" my/org-system-dir))
 (defconst my/org-project-ideas-file (expand-file-name "proyectos.org" my/org-ideas-dir))
 (defconst my/org-learning-file (expand-file-name "aprendizaje.org" my/org-ideas-dir))
+(defconst my/org-reflections-file (expand-file-name "reflexiones.org" my/org-ideas-dir))
+(defconst my/org-trash-file (expand-file-name "trash.org" my/org-root-dir))
+(defconst my/org-bibliography-file (expand-file-name "biblio.bib" my/org-root-dir))
 (defconst my/org-journal-dir (expand-file-name "journal/" my/org-root-dir))
 
 (defun my/org-agenda-skip-if-in-section (section)
@@ -143,6 +146,12 @@
   :defer t
   :config
   (setq org-directory my/org-root-dir
+        org-use-fast-todo-selection 'expert
+        org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "HOLD(h@/!)" "|" "DONE(d!)" "CANCELLED(c@)"))
+        org-todo-keyword-faces '(("NEXT" . org-warning)
+                                 ("WAIT" . shadow)
+                                 ("HOLD" . shadow)
+                                 ("CANCELLED" . shadow))
         org-log-done 'time
         org-log-redeadline 'time
         org-log-reschedule 'time
@@ -151,7 +160,10 @@
                                my/org-tasks-file
                                my/org-projects-file
                                my/org-agenda-file
-                               my/org-routines-file)
+                               my/org-routines-file
+                               my/org-project-ideas-file
+                               my/org-learning-file
+                               my/org-reflections-file)
         org-agenda-window-setup 'current-window
         org-agenda-start-with-log-mode t
         org-deadline-warning-days 7
@@ -162,7 +174,8 @@
                              (,my/org-projects-file :maxlevel . 2)
                              (,my/org-agenda-file :maxlevel . 1)
                              (,my/org-project-ideas-file :maxlevel . 2)
-                             (,my/org-learning-file :maxlevel . 2))
+                             (,my/org-learning-file :maxlevel . 2)
+                             (,my/org-reflections-file :maxlevel . 2))
         org-capture-templates
         `(("i" "Inbox / tarea" entry
            (file+headline ,my/org-inbox-file "Tareas")
@@ -253,7 +266,7 @@
         org-journal-file-format "%Y%m%d.org"
         org-icalendar-store-UID t
         org-icalendar-include-todo "all"
-        org-icalendar-combined-agenda-file "/media/syncthing/gtd-new/cal.ics")
+        org-icalendar-combined-agenda-file "/media/syncthing/gtd/cal.ics")
   (add-to-list 'org-agenda-files org-journal-dir))
 
 (use-package! org-node
@@ -265,7 +278,7 @@
   :config
   (setq org-mem-do-sync-with-org-id t)
   (setq org-mem-watch-dirs
-        (list "/media/syncthing/roam/" "/media/uni/" "/media/syncthing/gtd-new/"))
+        (list "/media/syncthing/roam/" "/media/uni/" "/media/syncthing/gtd/"))
   (org-mem-updater-mode)
   (org-node-cache-mode)
   (org-node-roam-accelerator-mode)
@@ -291,7 +304,7 @@
 (use-package! reftex
   :defer t
   :config
-  (setq reftex-default-bibliography "/gtd/biblio.bib"))
+  (setq reftex-default-bibliography my/org-bibliography-file))
 
 ;; ---------------------------------------------------------------------------
 ;; AI / gptel
