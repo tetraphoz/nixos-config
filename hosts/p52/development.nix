@@ -51,6 +51,7 @@
 
     # Ai
     aider-chat
+    pi-coding-agent
 
     # Databases
     sqlite
