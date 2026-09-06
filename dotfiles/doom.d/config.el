@@ -307,16 +307,17 @@
   (setq reftex-default-bibliography my/org-bibliography-file))
 
 ;; ---------------------------------------------------------------------------
-;; AI / gptel
+;; AI / gptel / llm
 ;; ---------------------------------------------------------------------------
 (after! gptel
   (setq gptel-default-mode 'org-mode)
   (gptel-make-openai "ChatGPT"
     :key (lambda () (my/auth-source-secret "api.openai.com"))
     :stream t)
-  (gptel-make-gemini "Gemini"
-    :key (lambda () (my/auth-source-secret "generativelanguage.google.com"))
-    :stream t))
+  ;; (gptel-make-gemini "Gemini"
+  ;;   :key (lambda () (my/auth-source-secret "generativelanguage.google.com"))
+  ;;   :stream t)
+  )
 
 (use-package! aidermacs
   :bind (("C-c a" . aidermacs-transient-menu))
@@ -324,7 +325,7 @@
   (setenv "OPENAI_API_KEY" (my/auth-source-secret "api.openai.com"))
   :custom
   (aidermacs-default-chat-mode 'architect)
-  (aidermacs-default-model "gpt-5.6-luna"))
+  (aidermacs-default-model "openai/gpt-5.6-luna"))
 
 ;; ---------------------------------------------------------------------------
 ;; Programming / LSP / DAP
