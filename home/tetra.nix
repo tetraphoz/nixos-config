@@ -66,6 +66,7 @@
     ncmpcpp
     cava
     spotify
+    nicotine-plus
 
     # Video
 
