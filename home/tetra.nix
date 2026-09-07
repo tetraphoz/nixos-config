@@ -67,6 +67,7 @@
     cava
     spotify
     nicotine-plus
+    beets
 
     # Video
 
