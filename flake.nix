@@ -8,12 +8,15 @@
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    pi.url = "github:lukasl-dev/pi.nix";
   };
 
   outputs = {
     self,
     nixpkgs,
     home-manager,
+    pi,
     ...
   }:
   {
@@ -33,6 +36,12 @@
 
             home-manager.users.tetra =
               import ./home/tetra.nix;
+          }
+
+          {
+            nixpkgs.overlays = [
+              pi.overlays.default
+            ];
           }
         ];
       };
