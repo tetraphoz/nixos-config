@@ -3,31 +3,6 @@
 {
   hardware.cpu.intel.updateMicrocode = true;
 
-  # Intel thermal/power management
-  services.throttled = {
-    enable = false;
-
-    extraConfig = ''
-      [GENERAL]
-      Enabled: True
-      Autoreload: True
-
-      [AC]
-      Update_rate_s: 5
-      PL1_Tdp_W: 44
-
-      [BATTERY]
-      Update_rate_s: 30
-
-      # Undervolt values
-      # Adjust after testing stability
-      CORE=-100
-      CACHE=-100
-      GPU=-50
-    '';
-  };
-
-
   # Laptop power management
   services.tlp = {
     enable = true;
@@ -48,12 +23,12 @@
     };
   };
 
-#Important: throttled + modern kernels There is a caveat: newer Linux kernels
-#have restricted MSR writes because of security changes. If throttled fails, you
-#may need:
-#boot.kernelParams = [
-#  "msr.allow_writes=on"
-#];
+  # Periodically scrub the Btrfs filesystem shared by the mounted subvolumes.
+  services.btrfs.autoScrub = {
+    enable = true;
+    fileSystems = [ "/" ];
+    interval = "monthly";
+  };
 
   environment.systemPackages = with pkgs; [
     powertop

@@ -35,6 +35,11 @@
     configDir = "/home/tetra/.config/syncthing";
   };
 
+  # Do not start Syncthing on the root filesystem if /media is not mounted.
+  systemd.services.syncthing.serviceConfig.RequiresMountsFor = [
+    "/media/syncthing"
+  ];
+
   # Files
   services.udisks2.enable = true;
   services.gvfs.enable = true;

@@ -36,7 +36,7 @@
 
     python3
     uv
-    pyright
+    basedpyright
     #pipx
 
     #nodejs
@@ -46,8 +46,15 @@
     php
     phpPackages.composer
 
+    go
+    gopls
+    nil
+    gnuplot
+
     jdk17
     kotlin
+    android-studio
+    android-tools
 
     # Ai
     aider-chat

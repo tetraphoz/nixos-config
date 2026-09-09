@@ -39,6 +39,7 @@
     dunst
     picom
     redshift
+    xss-lock
     xidlehook
     pywal16
 
@@ -73,6 +74,7 @@
 
     mpv
     obs-studio
+    davinci-resolve
 
     # Graphics
 
@@ -197,6 +199,12 @@
 
   home.file.".xinitrc".source =
     ../dotfiles/xinitrc;
+
+  # Ly launches the X session through .xsession instead of startx/.xinitrc.
+  home.file.".xsession" = {
+    source = ../dotfiles/xinitrc;
+    executable = true;
+  };
 
   home.file.".xmonad" = {
       source = ../dotfiles/xmonad;

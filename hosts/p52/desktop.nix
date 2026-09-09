@@ -7,7 +7,8 @@
   services.xserver = {
     enable = true;
 
-    displayManager.startx.enable = true;
+    # Ly provides the graphical login and starts the XMonad session.
+    displayManager.startx.enable = false;
 
     xkb = {
       layout = "us";
@@ -18,6 +19,11 @@
       enable = true;
       enableContribAndExtras = true;
     };
+  };
+
+  services.displayManager = {
+    defaultSession = "none+xmonad";
+    ly.enable = true;
   };
 
   #
@@ -42,12 +48,22 @@
     # GTK engines
     gtk-engine-murrine
 
-    # Screnshots
+    # Screenshots
     maim
 
-    # File manager
+    # File manager and previews
     thunar-volman
     polkit_gnome
+    vips
+    imagemagick
+    chafa
+    ffmpegthumbnailer
+    pkgs."poppler-utils"
+    exiftool
+
+    # X11 session utilities
+    xsettingsd
+    wmname
 
     # Fonts
     ibm-plex
@@ -109,6 +125,12 @@
     enable = true;
     pinentryPackage = pkgs.pinentry-gtk2;
     enableSSHSupport = true;
+
+    # Keep SSH keys cached for a day by default, up to one week maximum.
+    settings = {
+      "default-cache-ttl-ssh" = 86400;
+      "max-cache-ttl-ssh" = 604800;
+    };
   };
 
   programs.slock.enable = true;

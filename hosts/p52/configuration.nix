@@ -41,6 +41,9 @@
     "flakes"
   ];
 
+  # Deduplicate identical store paths after rebuilds and flake updates.
+  nix.settings.auto-optimise-store = true;
+
   nix.gc = {
     automatic = true;
     dates = "weekly";
@@ -79,7 +82,6 @@
 
 
   programs.zsh.enable = true;
-
 
   # Allow proprietary packages
   nixpkgs.config.allowUnfree = true;

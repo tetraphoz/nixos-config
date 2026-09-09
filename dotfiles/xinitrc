@@ -1,7 +1,13 @@
+#!/usr/bin/env bash
 
 export XDG_SESSION_TYPE=x11
 
-ssh-agent &
+# Lock when logind requests a lock or before suspend/lid sleep.
+xss-lock --transfer-sleep-lock -- slock &
+
+# Lock after 15 minutes of inactivity, except during fullscreen apps.
+xidlehook --not-when-fullscreen --timer 900 'slock' '' &
+
 dunst -b &
 wmname LG3D  &
 
