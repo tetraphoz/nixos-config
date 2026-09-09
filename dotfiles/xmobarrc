@@ -1,7 +1,7 @@
 Config {
     overrideRedirect = True,
 
-    font = "Cozette 9",
+    font = "xft:Fira Code:size=10:weight=medium",
 
     bgColor = "#111111",
     fgColor = "#bbbbbb",

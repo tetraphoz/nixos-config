@@ -244,7 +244,7 @@ myKeys =
     , ("M-<Backspace>",
         namedScratchpadAction myScratchPads "terminal")
 
-    , ("M-S-Y",
+    , ("M-S-y",
         namedScratchpadAction myScratchPads "ncmpcpp")
 
       ----------------------------------------------------------------
@@ -457,10 +457,10 @@ myScratchPads =
     where
 
         findTerm =
-            className =? "scratch"
+            resource =? "scratch"
 
         findNcm =
-            className =? "scratchNcm"
+            resource =? "scratchNcm"
 
         centered =
             customFloating $
@@ -499,10 +499,10 @@ myXPConfig =
 myManageHook :: ManageHook
 myManageHook =
     composeAll
-        [ className =? "scratch"
+        [ resource =? "scratch"
             --> customFloating (rectCentered 0.5)
 
-        , className =? "scratchNcm"
+        , resource =? "scratchNcm"
             --> customFloating (rectCentered 0.8)
 
         , isDialog
