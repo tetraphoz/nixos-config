@@ -395,7 +395,7 @@
 (use-package! calibredb
   :defer t
   :config
-  (setq calibredb-root-dir "~/media/books")
+  (setq calibredb-root-dir "/media/books")
   (setq calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir)))
 
 (use-package! pomm
