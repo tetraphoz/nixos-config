@@ -45,14 +45,20 @@ import XMonad.Actions.Minimize
 import XMonad.Actions.ToggleFullFloat
 
 
+-- Xmobar needs one process per Xinerama screen.  dynamicEasySBs starts and
+-- stops these processes as monitors are added or removed, while -x pins each
+-- process to its corresponding screen.  ScreenId's Show instance includes
+-- the constructor ("S 0"), so unwrap it before passing the number to xmobar.
+barSpawner :: ScreenId -> StatusBarConfig
+barSpawner (S screen) = statusBarProp
+    ("xmobar -x " ++ show screen ++ " ~/.config/xmobar/xmobarrc")
+    (pure myXmobarPP)
+
 main :: IO ()
 main =
     xmonad $
         ewmh
-        . docks
-        . withEasySB
-            (statusBarProp "xmobar ~/.config/xmobar/xmobarrc" (pure myXmobarPP))
-            defToggleStrutsKey
+        . dynamicEasySBs (pure . barSpawner)
         $ myConfig
 
 
