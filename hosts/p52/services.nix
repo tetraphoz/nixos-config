@@ -11,12 +11,91 @@
   # Printing
   services.printing.enable = true;
 
-  # Fingerprint reader.  The P52 exposes a Synaptics Metallica MIS reader as
-  # 06cb:009a; fprintd's stock libfprint does not list that product ID, so the
-  # flake overlay supplies the small host-specific ID addition.
+  # Fingerprint reader.  The P52's 06cb:009a device is one of the Validity
+  # sensors supported by python-validity.  It is not a normal libfprint device;
+  # open-fprintd provides the fprintd DBus API and python-validity supplies the
+  # sensor backend and firmware protocol.
   services.fprintd = {
-    enable = true;
-    package = pkgs.fprintd-p52;
+    # Do not start the stock fprintd/libfprint daemon.  Its Synaptics driver is
+    # not the driver required by this reader, but its PAM module and command
+    # line clients are still useful below.
+    enable = false;
+    package = pkgs.fprintd;
+  };
+
+  services.dbus.packages = [
+    pkgs.open-fprintd-p52
+    pkgs.python-validity
+  ];
+
+  services.udev.packages = [ pkgs.python-validity ];
+
+  environment.systemPackages = with pkgs; [
+    # fprintd supplies fprintd-enroll/list/verify and pam_fprintd.so.
+    fprintd
+    open-fprintd-p52
+    python-validity
+    innoextract
+
+    syncthing
+    thinkfan
+  ];
+
+  # These units are defined explicitly because the units shipped by the
+  # upstream packages contain /usr paths, which do not exist in the Nix store.
+  systemd.services.open-fprintd = {
+    description = "Open FPrint Daemon";
+    after = [ "dbus.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "dbus";
+      BusName = "net.reactivated.Fprint";
+      ExecStart = "${pkgs.open-fprintd-p52}/lib/open-fprintd/open-fprintd --debug";
+    };
+  };
+
+  systemd.services.python3-validity = {
+    description = "python-validity fingerprint sensor DBus service";
+    after = [ "open-fprintd.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.python-validity}/lib/python-validity/dbus-service --debug";
+      Restart = "on-failure";
+      RestartSec = 2;
+    };
+  };
+
+  # The sensor needs to be reinitialized after suspend/resume.  These are the
+  # companion units shipped by open-fprintd, with their /usr paths replaced by
+  # the actual Nix store paths.
+  systemd.services.open-fprintd-suspend = {
+    description = "Reset fingerprint backend before suspend";
+    before = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target" ];
+    wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.open-fprintd-p52}/lib/open-fprintd/suspend.py";
+    };
+  };
+
+  systemd.services.open-fprintd-resume = {
+    description = "Restart fingerprint backend after resume";
+    after = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target" ];
+    wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.open-fprintd-p52}/lib/open-fprintd/resume.py";
+    };
+  };
+
+  # Enable the PAM module independently of services.fprintd.enable: the
+  # module talks to open-fprintd through the same fprintd DBus API.
+  security.pam.services = {
+    login.fprintAuth = true;
+    ly.fprintAuth = true;
+    sudo.fprintAuth = true;
+    "polkit-1".fprintAuth = true;
   };
 
   # ThinkPad P52 fan control.  The P52 exposes two physical fans and its
@@ -139,8 +218,4 @@
 
   services.locate.enable = true;
 
-  environment.systemPackages = with pkgs; [
-    syncthing
-    thinkfan
-  ];
 }

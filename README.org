@@ -70,30 +70,43 @@ This repo includes configs for:
 - *ncmpcpp*
 
 *** Fingerprint Authentication
-The ThinkPad P52 has a Synaptics Metallica MIS reader with USB ID
-=06cb:009a=. That product ID is not included in the pinned upstream
-=libfprint= release, so the flake applies =patches/synaptics-009a.patch= and
-uses the patched library for =fprintd=. The patch also moves the device into
-libfprint's supported-device autosuspend list.
+The ThinkPad P52 exposes a Synaptics Metallica MIS reader with USB ID
+=06cb:009a=. This is a Validity protocol device and is *not* supported by the
+normal =libfprint= Synaptics driver. The NixOS configuration therefore uses
+the same stack as the linked P52 guide: =open-fprintd= plus the
+=python-validity= backend, with the =fprintd= clients and PAM module.
 
-The NixOS configuration enables fingerprint PAM authentication for the Ly
-graphical login, =sudo=, console login, SSH, and PolicyKit. After switching to
-the configuration, enroll a fingerprint as the user who will authenticate:
+After switching to the configuration, check that the backend is running and
+enroll a fingerprint as the user who will authenticate:
 
 #+begin_src bash
+systemctl status open-fprintd python3-validity
 fprintd-enroll
 fprintd-list "$USER"
+fprintd-verify
 #+end_src
 
-If enrollment or verification fails, inspect the daemon and kernel USB logs:
+The first initialization may need to upload firmware to the sensor. If the
+backend reports that the sensor is in a bad state, stop it and run the
+firmware/reset tools as root before starting it again:
 
 #+begin_src bash
-journalctl -u fprintd -b
-journalctl -k -b | grep -iE 'usb|fprint|synaptics'
+sudo systemctl stop python3-validity
+sudo validity-sensors-firmware
+sudo python3 /run/current-system/sw/share/python-validity/playground/factory-reset.py
+sudo systemctl start python3-validity
 #+end_src
 
-A password remains available as the fallback authentication method. The
-fingerprint database is managed by =fprintd=; do not copy it between machines.
+For troubleshooting, inspect both backend and kernel USB logs:
+
+#+begin_src bash
+journalctl -u open-fprintd -u python3-validity -b
+journalctl -k -b | grep -iE 'usb|fprint|validity|synaptics'
+#+end_src
+
+Suspend/resume units are enabled by the NixOS module. A password remains
+available as the fallback authentication method. The fingerprint database is
+managed by the backend; do not copy it between machines.
 
 *** Pywal Integration
 Some files are linked to Pywal-generated cache files, for example:
