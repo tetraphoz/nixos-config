@@ -67,7 +67,44 @@ in
 
   services.displayManager = {
     defaultSession = "none+xmonad";
-    ly.enable = true;
+
+    ly = {
+      enable = true;
+
+      # Catppuccin-inspired midnight palette with a subtle animated color wash.
+      # Ly accepts true-color values as 0xSSRRGGBB strings, where the first
+      # byte contains terminal styling flags.
+      settings = {
+        animation = "colormix";
+        animation_frame_delay = 80;
+        animation_timeout_sec = 0;
+        colormix_col1 = "0x00111B2B";
+        colormix_col2 = "0x001E1B4B";
+        colormix_col3 = "0x00243B53";
+
+        bg = "0x00111B2B";
+        fg = "0x00CDD6F4";
+        border_fg = "0x0189B4FA";
+        error_bg = "0x00111B2B";
+        error_fg = "0x01F38BA8";
+
+        box_title = "  ◈  TETRAPHZ // SYSTEM ACCESS  ◈  ";
+        initial_info_text = "  THINKPAD P52  •  SECURE SESSION  ";
+        clock = "%a %d %b  %H:%M";
+        bigclock = "en";
+        bigclock_12hr = false;
+        bigclock_seconds = false;
+
+        asterisk = "0x2022";
+        text_in_center = true;
+        margin_box_h = 3;
+        margin_box_v = 1;
+        input_len = 32;
+        full_color = true;
+        hide_version_string = true;
+        hide_keyboard_locks = true;
+      };
+    };
   };
 
   # Reapply the layout on HDMI hotplug/unplug and resume.  The P52's HDMI
