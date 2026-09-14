@@ -229,6 +229,11 @@
   services.emacs = {
     enable = true;
     package = pkgs.emacs;
+
+    # Ly starts X after the user manager is already up.  Starting the PGTK
+    # daemon from default.target makes Emacs initialize without a window
+    # system, so emacsclient cannot create X11 frames later.
+    startWithUserSession = "graphical";
   };
 
   services.mpd = {
