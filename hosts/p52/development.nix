@@ -4,7 +4,10 @@
   environment.systemPackages = with pkgs; [
     # Version control
     git
+    git-lfs
     gh
+    lazygit
+    delta
 
     # Shell utilities
     ripgrep
@@ -19,6 +22,14 @@
     yazi
     plocate
     ncdu
+    dust
+    duf
+    procs
+    ouch
+    hyperfine
+    watchexec
+    xh
+    just
 
     # Build tools
     gcc
@@ -50,6 +61,7 @@
     gopls
     nil
     gnuplot
+    pre-commit
 
     jdk17
     kotlin
@@ -82,12 +94,4 @@
   programs.direnv.enable = true;
   programs.direnv.nix-direnv.enable = true;
 
-  programs.git = {
-    enable = true;
-
-    config = {
-      init.defaultBranch = "main";
-      pull.rebase = true;
-    };
-  };
 }

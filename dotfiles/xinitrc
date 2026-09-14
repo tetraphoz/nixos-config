@@ -11,21 +11,30 @@ xidlehook --not-when-fullscreen --timer 900 'slock' '' &
 dunst -b &
 wmname LG3D  &
 
-#syncthing --no-browser &
+# Syncthing is managed by the system service.
+# syncthing --no-browser &
 
 xset r rate 200 60 &
 setxkbmap us altgr-intl &
 
-#xrandr --setprovideroutputsource modesetting NVIDIA-0 #PRIME
-#xrandr --setprovideroutputsource NVIDIA-G0 modesetting #Reverse PRIME
-
-#xrandr --setprovideroffloadsink NVIDIA-0 modesetting # PRIME GPU Offload
+# The internal panel is on Intel, but the P52 HDMI connector is on the
+# Quadro.  Attach the NVIDIA output provider to the Intel X screen before
+# configuring outputs (Reverse PRIME / OutputSink).  Ly does not consume
+# services.xserver.displayManager.setupCommands, so this belongs in the user
+# X session rather than only in the NixOS NVIDIA module.
+xrandr --setprovideroutputsource NVIDIA-G0 modesetting 2>/dev/null || true
 xrandr --auto
+
+# services.autorandr handles the initial layout and subsequent DRM hotplug
+# events.  Its profiles are declared in hosts/p52/desktop.nix.
+autorandr --change --default default >/dev/null 2>&1 || true
 #xrandr --dpi 142
 
 
-wal -R &
-ln -sf ~/.cache/wal/Colors.hs ~/.xmonad/lib/
+wal -R >/dev/null 2>&1 &
+if [[ -f ~/.cache/wal/Colors.hs ]]; then
+  ln -sfn ~/.cache/wal/Colors.hs ~/.xmonad/lib/Colors.hs
+fi
 
 xsettingsd &
 picom &

@@ -51,7 +51,7 @@ main =
         ewmh
         . docks
         . withEasySB
-            (statusBarProp "xmobar" (pure myXmobarPP))
+            (statusBarProp "xmobar ~/.config/xmobar/xmobarrc" (pure myXmobarPP))
             defToggleStrutsKey
         $ myConfig
 
@@ -189,8 +189,10 @@ myKeys =
     , ("M-p", spawn "rofipass")
 
       -- Screenshot
-    , ("<Print>", spawn "scrot -s")
-    , ("C-<Print>", spawn "ss_ocr")
+    , ("<Print>",
+        spawn "mkdir -p ~/Pictures/Screenshots && maim -s ~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png")
+    , ("C-<Print>",
+        spawn "bash -c 'tmp=$(mktemp --suffix=.png); maim -s \"$tmp\" && tesseract \"$tmp\" stdout 2>/dev/null | xclip -selection clipboard -in; rm -f \"$tmp\"'")
 
       -- Lock
     , ("M-S-l", spawn "slock")

@@ -31,6 +31,12 @@
       item = "rtprio";
       value = "95";
     }
+    {
+      domain = "@audio";
+      type = "-";
+      item = "nice";
+      value = "-20";
+    }
   ];
 
   users.users.tetra.extraGroups = [

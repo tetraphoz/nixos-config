@@ -69,6 +69,32 @@ This repo includes configs for:
 - *MPD*
 - *ncmpcpp*
 
+*** Fingerprint Authentication
+The ThinkPad P52 has a Synaptics Metallica MIS reader with USB ID
+=06cb:009a=. That product ID is not included in the pinned upstream
+=libfprint= release, so the flake applies =patches/synaptics-009a.patch= and
+uses the patched library for =fprintd=. The patch also moves the device into
+libfprint's supported-device autosuspend list.
+
+The NixOS configuration enables fingerprint PAM authentication for the Ly
+graphical login, =sudo=, console login, SSH, and PolicyKit. After switching to
+the configuration, enroll a fingerprint as the user who will authenticate:
+
+#+begin_src bash
+fprintd-enroll
+fprintd-list "$USER"
+#+end_src
+
+If enrollment or verification fails, inspect the daemon and kernel USB logs:
+
+#+begin_src bash
+journalctl -u fprintd -b
+journalctl -k -b | grep -iE 'usb|fprint|synaptics'
+#+end_src
+
+A password remains available as the fallback authentication method. The
+fingerprint database is managed by =fprintd=; do not copy it between machines.
+
 *** Pywal Integration
 Some files are linked to Pywal-generated cache files, for example:
 
@@ -97,9 +123,18 @@ sudo nixos-rebuild switch --flake .#p52
 #+end_src
 
 *** Build Home Manager config
-If using Home Manager separately:
+The normal path is the NixOS-integrated Home Manager module, so the system
+command above applies both configurations together. For a standalone Home
+Manager deployment, the flake also exposes the
+=homeConfigurations.tetra= output:
 #+begin_src bash
 home-manager switch --flake .#tetra
+#+end_src
+
+*** Validate the configuration
+#+begin_src bash
+nix flake check
+nix build .#nixosConfigurations.p52.config.system.build.toplevel --dry-run
 #+end_src
 
 *** Update flake inputs
@@ -112,12 +147,3 @@ nix flake update
 - This setup is tailored to my own workflow and hardware.
 - Some configs depend on generated theme files from *pywal*.
 - Symlinks in the repo may point to cache paths like =/home/tetra/.cache/wal/...=.
-
-** Goals
-
-This flake is meant to provide:
-
-- reproducible system configuration
-- a consistent desktop environment
-- a manageable Doom Emacs setup
-- easy dotfile syncing across machines

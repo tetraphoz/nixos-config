@@ -22,17 +22,77 @@
 (setq mouse-wheel-progressive-speed nil)
 (setq-default line-spacing 0.15)
 
+;; Keep the X11 mouse pointer visible over dark Emacs frames.  Emacs daemons
+;; do not have a graphical frame at startup, so apply this both now and when
+;; each GUI frame is created.
+(defconst my/emacs-mouse-color "#f8f8f2")
+
+;; Set the frame parameter as well as calling set-mouse-color.  The frame
+;; parameter is important for frames created by an Emacs daemon and prevents
+;; the toolkit from falling back to its default black pointer.
+(add-to-list 'default-frame-alist
+             `(mouse-color . ,my/emacs-mouse-color))
+
+(defun my/set-emacs-mouse-color (&optional frame)
+  "Use a light mouse pointer on graphical FRAME.
+
+Also set the frame parameter explicitly because some X toolkits ignore the
+value passed only through `set-mouse-color`."
+  (let ((frame (or frame (selected-frame))))
+    (when (display-graphic-p frame)
+      (set-frame-parameter frame 'mouse-color my/emacs-mouse-color)
+      (with-selected-frame frame
+        (set-mouse-color my/emacs-mouse-color)))))
+
+(add-hook 'after-make-frame-functions #'my/set-emacs-mouse-color)
+(add-hook 'server-after-make-frame-hook
+          (lambda () (my/set-emacs-mouse-color (selected-frame))))
+(my/set-emacs-mouse-color (selected-frame))
+
 ;; Theme / fonts / global variables
 (setq doom-theme 'ef-dream
-      doom-font (font-spec :family "Fira Code" :weight 'medium :size 11)
+      doom-font (font-spec :family "Cozette" :size 12)
       doom-variable-pitch-font (font-spec :family "IBM Plex Serif" :weight 'normal)
       display-line-numbers-type t
-      global-auto-revert-mode t
       browse-url-firefox-program "librewolf"
       user-full-name "tetraphz"
       user-mail-address "tetraphosphorus@gmail.com"
       confirm-kill-emacs nil
       search-default-mode #'char-fold-to-regexp)
+
+;; Start graphical Emacs frames with a transparent background.  Only the
+;; background is transparent; text and UI elements remain fully opaque.
+(defvar my/doom-transparent-background t)
+
+(defun my/toggle-doom-transparent-background ()
+  "Toggle transparency of the current and future graphical Emacs frames."
+  (interactive)
+  (setq my/doom-transparent-background
+        (not my/doom-transparent-background))
+  (let ((alpha-background (if my/doom-transparent-background 0 100))
+        ;; alpha-background is the precise option, while alpha provides a
+        ;; fallback for X toolkits/compositors that do not honor it reliably.
+        (alpha (if my/doom-transparent-background '(90 . 90) '(100 . 100))))
+    (dolist (frame (frame-list))
+      (set-frame-parameter frame 'alpha-background alpha-background)
+      (set-frame-parameter frame 'alpha alpha))
+    (setq default-frame-alist
+          (assq-delete-all 'alpha-background default-frame-alist))
+    (setq default-frame-alist
+          (assq-delete-all 'alpha default-frame-alist))
+    (push `(alpha-background . ,alpha-background) default-frame-alist)
+    (push `(alpha . ,alpha) default-frame-alist)
+    (message "Emacs background transparency %s"
+             (if my/doom-transparent-background "enabled" "disabled"))))
+
+(setq default-frame-alist
+      (assq-delete-all 'alpha-background default-frame-alist))
+(setq default-frame-alist
+      (assq-delete-all 'alpha default-frame-alist))
+(push '(alpha-background . 0) default-frame-alist)
+(push '(alpha . (90 . 90)) default-frame-alist)
+
+(map! :leader "t o" #'my/toggle-doom-transparent-background)
 
 ;; Add local bin directory to Emacs's PATH
 (setenv "PATH" (concat (getenv "PATH") ":/home/tetra/.local/bin"))
@@ -44,12 +104,11 @@
   (setq +evil-want-o/O-to-continue-comments nil))
 
 (use-package! evil-owl
-  :defer t
+  :hook (doom-first-input . evil-owl-mode)
   :config
   (setq evil-owl-display-method 'posframe
         evil-owl-extra-posframe-args '(:width 50 :height 30)
-        evil-owl-max-string-length 50)
-  (evil-owl-mode))
+        evil-owl-max-string-length 50))
 
 (use-package! doom-modeline
   :defer t
@@ -90,9 +149,6 @@
 
 (use-package! mixed-pitch
   :hook (text-mode . mixed-pitch-mode))
-
-(use-package! olivetti
-  :defer t)
 
 ;; ---------------------------------------------------------------------------
 ;; Dashboard behavior
@@ -241,11 +297,7 @@
 
 
   (add-to-list 'org-modules 'org-habit)
-  (add-to-list 'org-modules 'org-depend)
-
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((gnuplot . t))))
+  (add-to-list 'org-modules 'org-depend))
 
 (use-package! org-roam
   :defer t
@@ -299,8 +351,6 @@
   :config
   (add-hook 'org-mode-hook 'org-krita-mode))
 
-(use-package! org-gcal :defer t)
-
 (use-package! reftex
   :defer t
   :config
@@ -327,23 +377,23 @@
   (aidermacs-default-chat-mode 'architect)
   (aidermacs-default-model "openai/gpt-5.6-luna"))
 
+;; Use agent-shell with Pi through the ACP adapter.  npx downloads the pinned
+;; adapter on first use and then reuses npm's local cache.
+(use-package! agent-shell
+  :commands (agent-shell-pi-start-agent)
+  :init
+  (setq agent-shell-pi-acp-command
+        '("npx" "--yes" "--package" "pi-acp@0.0.33" "pi-acp"))
+  :bind (("C-c A" . agent-shell-pi-start-agent)))
+
 ;; ---------------------------------------------------------------------------
 ;; Programming / LSP / DAP
 ;; ---------------------------------------------------------------------------
-(use-package! lsp-mode
-  :defer t
-  :config
-  (setq lsp-pyright-langserver-command "basedpyright"))
-
-(after! lsp-clangd
-  (setq lsp-clients-clangd-args
-        '("-j=3"
-          "--background-index"
-          "--clang-tidy"
-          "--completion-style=detailed"
-          "--header-insertion=never"
-          "--header-insertion-decorators=0"))
-  (set-lsp-priority! 'clangd 2))
+;; Doom is configured to use Eglot rather than lsp-mode.  Register the
+;; Nix-provided basedpyright executable explicitly; Eglot will not infer this
+;; replacement from the lsp-mode-specific `lsp-pyright' setting.
+(set-eglot-client! '(python-mode python-ts-mode)
+                   '("basedpyright-langserver" "--stdio"))
 
 (after! dap-mode
   (setq dap-python-debugger 'debugpy))
@@ -362,7 +412,7 @@
   :defer t
   :config
   (add-hook 'c++-mode-hook (lambda ()
-                             (lsp-deferred)
+                             (eglot-ensure)
                              (platformio-conditionally-enable))))
 
 (use-package! glsl-mode
@@ -384,9 +434,6 @@
 ;; ---------------------------------------------------------------------------
 ;; Misc utilities
 ;; ---------------------------------------------------------------------------
-(use-package! w3m
-  :defer t)
-
 (use-package! elfeed
   :defer t
   :config

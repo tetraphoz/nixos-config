@@ -36,7 +36,7 @@
         +defaults)
        ligatures
        ;; tabs                  ; a tab bar for Emacs
-       (treemacs +lsp)         ; a project drawer, like neotree but cooler
+       treemacs                 ; a project drawer, like neotree but cooler
        unicode                 ; extended unicode support for various languages
        ;; vc-gutter             ; vcs diff in the fringe
        ;; vi-tilde-fringe       ; fringe tildes to mark beyond EOB
@@ -107,9 +107,7 @@
         +offline
         +docsets)               ; navigate your code and its documentation
        (lsp
-        +eglot
-        +booster
-        +peek)
+        +eglot)
        ;; macos                 ; MacOS-specific commands
        magit
        make                    ; run make tasks from Emacs
@@ -157,10 +155,12 @@
        ;; gdscript              ; the language you waited for
        (go +lsp
            +tree-sitter)        ; the hipster dialect
-       haskell                 ; a language that's lazier than I am
+       (haskell +lsp
+                +tree-sitter)    ; a language that's lazier than I am
        ;; hy                    ; readability of scheme w/ speed of python
        ;; idris                 ;
-       json                    ; At least it ain't XML
+       (json +lsp
+             +tree-sitter)       ; At least it ain't XML
        (java
         +lsp
         +tree-sitter)           ; the poster child for carpal tunnel syndrome
@@ -168,7 +168,8 @@
         +lsp
         +tree-sitter)           ; all(hope(abandon(ye(who(enter(here))))))
        julia                   ; a better, faster MATLAB
-       kotlin                 ; a better, slicker Java(Script)
+       (kotlin +lsp
+               +tree-sitter)     ; a better, slicker Java(Script)
        (latex                   ; writing papers in Emacs has never been so fun
         +lsp
         +cdlatex
@@ -184,8 +185,8 @@
         +tree-sitter)           ; I hereby declare "nix geht mehr!"
        ;; ocaml                 ; an objective camel
        (org                     ; organize your plain life in plain text
-        +roam2
-        +brain
+        +roam
+        +gnuplot
         +pandoc
         +noter
         +dragndrop
@@ -225,7 +226,8 @@
        (web
         +lsp
         +tree-sitter)
-       yaml                    ; JSON, but readable
+       (yaml +lsp
+             +tree-sitter)       ; JSON, but readable
 
        :email
        ;; (mu4e +gmail)

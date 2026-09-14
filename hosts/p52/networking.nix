@@ -15,20 +15,15 @@
   hardware.enableRedistributableFirmware = true;
 
 
-  # DNS configuration
-  networking.nameservers = [
-    "1.1.1.1"
-    "8.8.8.8"
-  ];
-
 
   # Enable firewall
   networking.firewall = {
     enable = true;
 
-    # Allow local services if needed
+    # SSH is key-only below, so expose it for administration while keeping
+    # every other inbound service closed by default.
     allowedTCPPorts = [
-      # 22 # SSH
+      22
       # 8096 # Jellyfin
     ];
 
@@ -44,6 +39,7 @@
     settings = {
       PermitRootLogin = "no";
       PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
     };
   };
 

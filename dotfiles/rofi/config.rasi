@@ -2,7 +2,7 @@
 configuration {
     show-icons:        true;
     icon-theme:        "Numix";
-    font:              "Tamzen 8";
+    font:              "Cozette 12";
     cycle:             true;
     /* hide-scrollbar: true; */
     disable-history:   false;

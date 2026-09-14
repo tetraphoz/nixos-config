@@ -1,0 +1,24 @@
+--- a/libfprint/drivers/synaptics/synaptics.c
++++ b/libfprint/drivers/synaptics/synaptics.c
+@@ -33,4 +33,5 @@
+ static const FpIdEntry id_table[] = {
++  { .vid = SYNAPTICS_VENDOR_ID,  .pid = 0x009A,  },
+   { .vid = SYNAPTICS_VENDOR_ID,  .pid = 0x00BD,  },
+   { .vid = SYNAPTICS_VENDOR_ID,  .pid = 0x00C2,  },
+   { .vid = SYNAPTICS_VENDOR_ID,  .pid = 0x00C4,  },
+--- a/data/autosuspend.hwdb
++++ b/data/autosuspend.hwdb
+@@ -253,4 +253,5 @@
+ # Supported by libfprint driver synaptics
++usb:v06CBp009A*
+ usb:v06CBp00BD*
+ usb:v06CBp00C2*
+ usb:v06CBp00C4*
+@@ -382,6 +382,5 @@
+ usb:v06CBp0081*
+ usb:v06CBp0088*
+ usb:v06CBp008A*
+-usb:v06CBp009A*
+ usb:v06CBp009B*
+ usb:v06CBp00A2*
+ usb:v06CBp00A8*

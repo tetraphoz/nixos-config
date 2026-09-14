@@ -32,7 +32,7 @@
     idle_threshold = 170
 
     # Font and typography settings
-    font = Tamzen 8
+    font = Cozette 12
     alignment = center
     word_wrap = yes
 

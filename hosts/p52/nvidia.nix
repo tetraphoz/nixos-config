@@ -14,6 +14,19 @@
   };
 
   hardware.nvidia.prime = {
+    # The P52's HDMI connector is wired to the Quadro, while the internal
+    # panel is wired to Intel (Reverse PRIME / OutputSink).  Normal PRIME
+    # offload alone only exposes the Intel-connected outputs.
+    reverseSync = {
+      enable = true;
+
+      # Ly does not implement displayManager.setupCommands; xinitrc attaches
+      # NVIDIA-G0 to modesetting after the X session has a DISPLAY.
+      setupCommands.enable = false;
+    };
+
+    # Reverse PRIME also provides render offload.  Keep the helper available
+    # for applications that should render directly on the Quadro.
     offload = {
       enable = true;
       enableOffloadCmd = true;

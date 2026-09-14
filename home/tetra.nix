@@ -13,9 +13,18 @@
   ];
 
   home.sessionVariables = {
-    VST_PATH = "/media/audio/vst";
-    VST3_PATH = "/media/audio/vst3";
-    LV2_PATH = "/media/audio/lv2";
+    BROWSER = "librewolf";
+    EDITOR = "emacsclient";
+    VISUAL = "emacsclient";
+    # User plug-ins take precedence; the system profile contains the
+    # Nix-managed VST/LV2/CLAP plug-ins from music-production.nix.
+    VST_PATH = "/media/audio/vst:/run/current-system/sw/lib/vst";
+    VST3_PATH = "/media/audio/vst3:/run/current-system/sw/lib/vst3";
+    CLAP_PATH = "/media/audio/clap:/run/current-system/sw/lib/clap";
+    LV2_PATH = "/media/audio/lv2:/run/current-system/sw/lib/lv2";
+    LADSPA_PATH = "/media/audio/ladspa:/run/current-system/sw/lib/ladspa";
+    DSSI_PATH = "/media/audio/dssi:/run/current-system/sw/lib/dssi";
+    SOUND_FONT_PATH = "/media/audio/samples/soundfonts";
   };
 
   home.packages = with pkgs; [
@@ -52,6 +61,8 @@
 
     thunar
     ranger
+    yazi
+    sxiv
 
     # Development
 
@@ -73,7 +84,6 @@
     # Video
 
     mpv
-    obs-studio
     davinci-resolve
 
     # Graphics
@@ -100,8 +110,6 @@
     qbittorrent
 
     # Sync
-
-    syncthing
 
     # SDR
 
@@ -133,21 +141,32 @@
     };
   };
 
-  programs.git.settings = {
-    user.name = "tetraphoz";
-    user.email = "tetraphosphorus@gmail.com";
-  
-    init.defaultBranch = "main";
-    pull.rebase = false;
+  programs.git = {
+    enable = true;
+
+    settings = {
+      user.name = "tetraphoz";
+      user.email = "tetraphosphorus@gmail.com";
+      init.defaultBranch = "main";
+      pull.rebase = false;
+    };
   };
 
   programs.zsh = {
     enable = true;
 
-    initContent = ''
-      export PATH="$HOME/.local/bin:$PATH"
-    '';
-  
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
+    historySubstringSearch.enable = true;
+
+    history = {
+      size = 100000;
+      save = 100000;
+      ignoreDups = true;
+      share = true;
+      extended = true;
+    };
+
     shellAliases = {
       ns = "sudo nixos-rebuild switch --flake /etc/nixos#p52";
       nst = "sudo nixos-rebuild test --flake /etc/nixos#p52";
@@ -156,6 +175,8 @@
       ".." = "cd ..";
       ll = "ls -lah";
       g = "git";
+      lg = "lazygit";
+      j = "just";
       v = "nvim";
     };
   };
@@ -174,6 +195,42 @@
 
   programs.home-manager.enable = true;
 
+  # Pi keeps its settings outside XDG_CONFIG_HOME.  Update only the model
+  # preference so Pi can still manage the rest of this mutable settings file.
+  home.activation.configurePi =
+    config.lib.dag.entryAfter [ "writeBoundary" ] ''
+      PI_SETTINGS="$HOME/.pi/agent/settings.json"
+      mkdir -p "$(dirname "$PI_SETTINGS")"
+
+      if [ -f "$PI_SETTINGS" ]; then
+        tmp="$(mktemp)"
+        if ${pkgs.jq}/bin/jq \
+          '.defaultProvider = "openai" | .defaultModel = "gpt-5.6-luna"' \
+          "$PI_SETTINGS" > "$tmp"; then
+          chmod --reference="$PI_SETTINGS" "$tmp" 2>/dev/null || true
+          if ! cmp -s "$tmp" "$PI_SETTINGS"; then
+            mv "$tmp" "$PI_SETTINGS"
+          else
+            rm -f "$tmp"
+          fi
+        else
+          rm -f "$tmp"
+          echo "warning: could not update Pi settings; leaving them unchanged" >&2
+        fi
+      else
+        printf '%s\\n' \
+          '{"defaultProvider":"openai","defaultModel":"gpt-5.6-luna"}' \
+          > "$PI_SETTINGS"
+      fi
+    '';
+
+  # Run the Doom-managed Emacs daemon as the user, so emacsclient can reach
+  # the same configuration and authentication agent as the desktop session.
+  services.emacs = {
+    enable = true;
+    package = pkgs.emacs;
+  };
+
   services.mpd = {
     enable = true;
   
@@ -190,12 +247,22 @@
         name "PipeWire"
       }
   
+      audio_output {
+        type "fifo"
+        name "Visualizer"
+        path "/tmp/mpd.fifo"
+        format "44100:16:2"
+      }
+
       auto_update "yes"
       restore_paused "yes"
       replaygain "album"
       filesystem_charset "UTF-8"
     '';
   };
+
+  # Do not start MPD before the separate media filesystem is available.
+  systemd.user.services.mpd.Unit.RequiresMountsFor = [ "/media/music" ];
 
   home.file.".xinitrc".source =
     ../dotfiles/xinitrc;
@@ -206,22 +273,40 @@
     executable = true;
   };
 
-  home.file.".xmonad" = {
-      source = ../dotfiles/xmonad;
-      recursive = true;
-      force = true;
-  };
+  # Keep the legacy default path in sync too.  Xmobar launched without an
+  # explicit config path reads ~/.xmobarrc.
+  home.file.".xmobarrc".source = ../dotfiles/xmobarrc;
 
-  home.activation.makeXmonadWritable =
-     config.lib.dag.entryAfter [ "writeBoundary" ] ''
-     chmod -R u+w $HOME/.xmonad
-  '';
+  # Keep the generated XMonad build directory writable.  Managing the whole
+  # directory as one Home Manager symlink makes xmonad --recompile try to
+  # write into the read-only Nix store.
+  home.file.".xmonad/xmonad.hs".source = ../dotfiles/xmonad/xmonad.hs;
 
   home.activation.linkWalColors =
     config.lib.dag.entryAfter [ "writeBoundary" ] ''
       mkdir -p "$HOME/.xmonad/lib"
-      ln -sfn "$HOME/.cache/wal/Colors.hs" \
-        "$HOME/.xmonad/lib/Colors.hs"
+      if [ -f "$HOME/.cache/wal/Colors.hs" ]; then
+        ln -sfn "$HOME/.cache/wal/Colors.hs" \
+          "$HOME/.xmonad/lib/Colors.hs"
+      elif [ ! -e "$HOME/.xmonad/lib/Colors.hs" ]; then
+        cat > "$HOME/.xmonad/lib/Colors.hs" <<'EOF'
+module Colors where
+
+background = "#17081e"
+foreground = "#c4c3c4"
+
+color0 = "#17081e"
+color1 = "#ff5555"
+color2 = "#50fa7b"
+color3 = "#f1fa8c"
+color4 = "#bd93f9"
+color5 = "#ff79c6"
+color6 = "#8be9fd"
+color7 = "#c4c3c4"
+color8 = "#6272a4"
+color9 = "#ff6e6e"
+EOF
+      fi
     '';
 
 
@@ -235,6 +320,15 @@
   xdg.configFile."kitty".source =
     ../dotfiles/kitty;
 
+  xdg.configFile."mpv".source =
+    ../dotfiles/mpv;
+
+  xdg.configFile."wal/templates".source =
+    ../dotfiles/wal/templates;
+
+  xdg.configFile."xmobar/xmobarrc".source =
+    ../dotfiles/xmobarrc;
+
   xdg.configFile."rofi".source =
     ../dotfiles/rofi;
 
@@ -244,17 +338,37 @@
   xdg.configFile."picom".source =
     ../dotfiles/picom;
 
-  xdg.configFile."mpd".source =
-    ../dotfiles/mpd;
-
   xdg.configFile."ncmpcpp".source =
     ../dotfiles/ncmpcpp;
 
-  home.activation.copyWal =
-     config.lib.dag.entryAfter [ "writeBoundary" ] ''
-       mkdir -p $HOME/.config/wal
-       cp -r ${../dotfiles/wal}/* $HOME/.config/wal/
-       chmod -R u+w $HOME/.config/wal
+  # Use dedicated desktop applications when opening files from Yazi.  Yazi's
+  # built-in image preview remains available in the preview pane, while Enter
+  # opens images in sxiv and audio files in a detached mpv window.
+  xdg.configFile."yazi/yazi.toml".text = ''
+    [opener]
+    edit = [
+      { run = "''${EDITOR:-vi} \"$@\"", block = true, desc = "Edit", for = "unix" },
+    ]
+    image = [
+      { run = "sxiv \"$@\"", orphan = true, desc = "Open image", for = "unix" },
+    ]
+    play = [
+      { run = "mpv --no-terminal --force-window=yes -- \"$@\"", orphan = true, desc = "Play with mpv", for = "unix" },
+    ]
+    open = [
+      { run = "xdg-open \"$1\"", orphan = true, desc = "Open", for = "linux" },
+    ]
+
+    [open]
+    rules = [
+      { mime = "text/*", use = "edit" },
+      { mime = "application/json", use = "edit" },
+      { mime = "image/*", use = "image" },
+      { mime = "video/*", use = "play" },
+      { mime = "audio/*", use = "play" },
+      { mime = "application/pdf", use = "open" },
+      { mime = "*/*", use = "open" },
+    ]
   '';
 
   xdg.desktopEntries.renoise = {
@@ -281,13 +395,18 @@
   
       if [ ! -d "$ROFIPASS_DIR/.git" ]; then
         mkdir -p "$(dirname "$ROFIPASS_DIR")"
-        ${pkgs.git}/bin/git clone \
+        if ! ${pkgs.git}/bin/git clone \
           https://codeberg.org/aocoronel/rofipass \
-          "$ROFIPASS_DIR"
+          "$ROFIPASS_DIR"; then
+          echo "warning: rofipass could not be downloaded; continuing without it" >&2
+        fi
       fi
-  
-      chmod 700 "$ROFIPASS_DIR/src/rofipass"
-      ln -sf "$ROFIPASS_DIR/src/rofipass" "$ROFIPASS_BIN"
+
+      if [ -x "$ROFIPASS_DIR/src/rofipass" ]; then
+        mkdir -p "$(dirname "$ROFIPASS_BIN")"
+        chmod 700 "$ROFIPASS_DIR/src/rofipass"
+        ln -sfn "$ROFIPASS_DIR/src/rofipass" "$ROFIPASS_BIN"
+      fi
     '';
 
   # xdg.configFile."wal".source =
