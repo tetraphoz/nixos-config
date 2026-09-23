@@ -205,7 +205,7 @@
       if [ -f "$PI_SETTINGS" ]; then
         tmp="$(mktemp)"
         if ${pkgs.jq}/bin/jq \
-          '.defaultProvider = "openai" | .defaultModel = "gpt-5.6-luna"' \
+          '.defaultProvider = "openai" | .defaultModel = "gpt-6-luna"' \
           "$PI_SETTINGS" > "$tmp"; then
           chmod --reference="$PI_SETTINGS" "$tmp" 2>/dev/null || true
           if ! cmp -s "$tmp" "$PI_SETTINGS"; then
@@ -219,7 +219,7 @@
         fi
       else
         printf '%s\\n' \
-          '{"defaultProvider":"openai","defaultModel":"gpt-5.6-luna"}' \
+          '{"defaultProvider":"openai","defaultModel":"gpt-6-luna"}' \
           > "$PI_SETTINGS"
       fi
     '';
