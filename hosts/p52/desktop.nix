@@ -71,22 +71,23 @@ in
     ly = {
       enable = true;
 
-      # Catppuccin-inspired midnight palette with a subtle animated color wash.
+      # Lava-lamp palette: deep plum, crimson, and molten orange in a slow
+      # animated color wash.
       # Ly accepts true-color values as 0xSSRRGGBB strings, where the first
       # byte contains terminal styling flags.
       settings = {
         animation = "colormix";
-        animation_frame_delay = 80;
+        animation_frame_delay = 120;
         animation_timeout_sec = 0;
-        colormix_col1 = "0x00111B2B";
-        colormix_col2 = "0x001E1B4B";
-        colormix_col3 = "0x00243B53";
+        colormix_col1 = "0x00150816";
+        colormix_col2 = "0x006E1F1B";
+        colormix_col3 = "0x00E85D1A";
 
-        bg = "0x00111B2B";
-        fg = "0x00CDD6F4";
-        border_fg = "0x0189B4FA";
-        error_bg = "0x00111B2B";
-        error_fg = "0x01F38BA8";
+        bg = "0x00150816";
+        fg = "0x00FFE7C2";
+        border_fg = "0x01FF8A3D";
+        error_bg = "0x00150816";
+        error_fg = "0x01FF6B4A";
 
         box_title = "  ◈  TETRAPHZ // SYSTEM ACCESS  ◈  ";
         initial_info_text = "  THINKPAD P52  •  SECURE SESSION  ";
