@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }:
@@ -105,7 +106,14 @@
   # module talks to open-fprintd through the same fprintd DBus API.
   security.pam.services = {
     login.fprintAuth = true;
-    ly.fprintAuth = true;
+    # Make Ly fingerprint-only: do not keep the normal password fallback in
+    # the display-manager PAM stack.  Password authentication remains enabled
+    # for TTY login, sudo, and the other PAM services below.
+    ly = {
+      fprintAuth = true;
+      # Ly's module enables unixAuth by default, so explicitly override it.
+      unixAuth = lib.mkForce false;
+    };
     sudo.fprintAuth = true;
     "polkit-1".fprintAuth = true;
   };
