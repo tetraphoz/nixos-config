@@ -259,8 +259,12 @@ in
     pinentryPackage = pkgs.pinentry-gtk2;
     enableSSHSupport = true;
 
-    # Keep SSH keys cached for a day by default, up to one week maximum.
+    # Keep GPG passphrases cached for a day by default, up to one week
+    # maximum.  rofipass decrypts Pass entries with GPG (not SSH), so the
+    # non-SSH settings are required here as well.
     settings = {
+      "default-cache-ttl" = 86400;
+      "max-cache-ttl" = 604800;
       "default-cache-ttl-ssh" = 86400;
       "max-cache-ttl-ssh" = 604800;
     };
