@@ -32,6 +32,7 @@
     # Terminal
 
     kitty
+    procps # provides pkill
     tmux
     zoxide
     fzf
@@ -115,6 +116,10 @@
 
     rtl-sdr
     gqrx
+
+    # Security
+
+    keepassxc
 
     # Misc
 
