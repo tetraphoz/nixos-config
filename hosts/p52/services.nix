@@ -166,9 +166,9 @@
       }
     ];
 
-    # Conservative hysteresis avoids rapid level changes while keeping the
-    # CPU/GPU well below their thermal limits.  "level auto" returns control
-    # to the EC on sustained high temperature loads as a safety measure.
+    # Ramp aggressively and use the P52's dedicated full-speed mode once the
+    # machine is hot.  This must come after level 7: the EC exposes
+    # "full-speed" separately from levels 0-7.
     levels = [
       [
         0
@@ -201,7 +201,7 @@
         85
       ]
       [
-        "level auto"
+        "level full-speed"
         80
         32767
       ]
