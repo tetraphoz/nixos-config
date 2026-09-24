@@ -164,7 +164,7 @@ value passed only through `set-mouse-color`."
 ;; ---------------------------------------------------------------------------
 ;; Org mode
 ;; ---------------------------------------------------------------------------
-(defconst my/org-root-dir "/media/syncthing/gtd/")
+(defconst my/org-root-dir "/media/sync/gtd/")
 (defconst my/org-system-dir (expand-file-name "sistema/" my/org-root-dir))
 (defconst my/org-ideas-dir (expand-file-name "ideas/" my/org-root-dir))
 (defconst my/org-inbox-file (expand-file-name "inbox.org" my/org-system-dir))
@@ -246,7 +246,7 @@ value passed only through `set-mouse-color`."
            (file+headline ,my/org-inbox-file "Links")
            "* %?\n%U\n%a\n")
           ("d" "Diario de sueños" entry
-           (file+datetree "/media/syncthing/roam/20250918133306-suenos.org")
+           (file+datetree "/media/sync/roam/20250918133306-suenos.org")
            "* %U\n%?"))
         org-agenda-custom-commands
         `(("g" "GTD dashboard"
@@ -302,7 +302,7 @@ value passed only through `set-mouse-color`."
 (use-package! org-roam
   :defer t
   :config
-  (setq org-roam-directory "/media/syncthing/roam")
+  (setq org-roam-directory "/media/sync/roam")
   (setq org-roam-completion-everywhere t)
   (setq org-roam-mode-sections
         (list #'org-roam-backlinks-section
@@ -318,7 +318,7 @@ value passed only through `set-mouse-color`."
         org-journal-file-format "%Y%m%d.org"
         org-icalendar-store-UID t
         org-icalendar-include-todo "all"
-        org-icalendar-combined-agenda-file "/media/syncthing/gtd/cal.ics")
+        org-icalendar-combined-agenda-file "/media/sync/gtd/cal.ics")
   (add-to-list 'org-agenda-files org-journal-dir))
 
 (use-package! org-node
@@ -330,7 +330,7 @@ value passed only through `set-mouse-color`."
   :config
   (setq org-mem-do-sync-with-org-id t)
   (setq org-mem-watch-dirs
-        (list "/media/syncthing/roam/" "/media/uni/" "/media/syncthing/gtd/"))
+        (list "/media/sync/roam/" "/media/uni/" "/media/sync/gtd/"))
   (org-mem-updater-mode)
   (org-node-cache-mode)
   (org-node-roam-accelerator-mode)
