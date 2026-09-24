@@ -10,6 +10,17 @@
     enable = true;
   };
 
+  # Tailscale provides private remote access to the host.  Authenticate the
+  # node once after switching with `sudo tailscale up`; no auth key is kept in
+  # this repository.
+  services.tailscale = {
+    enable = true;
+    openFirewall = true;
+  };
+
+  # Manage Thunderbolt authorization for docks and other peripherals.
+  services.hardware.bolt.enable = true;
+
 
   # Enable wireless firmware
   hardware.enableRedistributableFirmware = true;
@@ -20,10 +31,10 @@
   networking.firewall = {
     enable = true;
 
-    # SSH is key-only below, so expose it for administration while keeping
-    # every other inbound service closed by default.
+    # SSH is key-only below. Use a non-standard port to reduce automated
+    # scanning while keeping every other inbound service closed by default.
     allowedTCPPorts = [
-      22
+      2222
       # 8096 # Jellyfin
     ];
 
@@ -35,6 +46,7 @@
   # SSH access
   services.openssh = {
     enable = true;
+    ports = [ 2222 ];
 
     settings = {
       PermitRootLogin = "no";
@@ -71,5 +83,6 @@
     mtr
 
     dnsutils
+    speedtest-cli
   ];
 }

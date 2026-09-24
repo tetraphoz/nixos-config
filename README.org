@@ -144,6 +144,22 @@ Manager deployment, the flake also exposes the
 home-manager switch --flake .#tetra
 #+end_src
 
+*** Remote desktop and private networking
+Sunshine is enabled as a Moonlight host for the active X11 session. Its
+streaming and web UI ports are opened by the NixOS module. After switching,
+open the Sunshine web UI from a trusted network to create credentials, then
+pair a Moonlight client with this machine's hostname or Tailscale address.
+
+Tailscale is enabled as well, but this configuration deliberately does not
+store an auth key. Authenticate the machine once after the first switch:
+#+begin_src bash
+sudo tailscale up
+sudo tailscale status
+#+end_src
+
+The Tailscale address can then be used to reach Sunshine without exposing the
+host's streaming ports to the public Internet.
+
 *** Validate the configuration
 #+begin_src bash
 nix flake check

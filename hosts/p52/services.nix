@@ -11,6 +11,18 @@
   # Printing
   services.printing.enable = true;
 
+  # Sunshine exposes the active X11 desktop to Moonlight clients.  It runs as
+  # the logged-in user through the graphical-session target, so it can access
+  # this host's display and audio session without a separate service account.
+  services.sunshine = {
+    enable = true;
+    openFirewall = true;
+
+    # Allow Sunshine's preferred DRM/KMS capture path.  This is needed for
+    # reliable capture with the P52's NVIDIA/PRIME display setup.
+    capSysAdmin = true;
+  };
+
   # Fingerprint reader.  The P52's 06cb:009a device is one of the Validity
   # sensors supported by python-validity.  It is not a normal libfprint device;
   # open-fprintd provides the fprintd DBus API and python-validity supplies the
