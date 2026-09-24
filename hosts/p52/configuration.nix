@@ -28,6 +28,9 @@
 
     # Games
     ./games.nix
+
+    # VR streaming and desktop overlay
+    ./vr.nix
   ];
 
 
@@ -106,6 +109,9 @@
     vim
     wget
     curl
+
+    # ADB is used for WiVRn's wired Quest connection.
+    android-tools
 
     pciutils
     usbutils

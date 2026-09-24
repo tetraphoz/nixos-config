@@ -99,6 +99,49 @@
           };
         };
       })
+
+      # nixos-26.05 still ships WiVRn 26.6.2, while the headset client used
+      # on this network is 26.9. Build the matching upstream release until
+      # nixpkgs updates its WiVRn package.
+      (final: prev:
+        let
+          wivrnSrc = final.fetchFromGitHub {
+            owner = "WiVRn";
+            repo = "WiVRn";
+            rev = "v26.9";
+            hash = "sha256-/kXgbku/4EeYY5YTwtY71csgxOP8bRACLqOvKXolg5g=";
+          };
+          monadoSrc = final.fetchFromGitLab {
+            domain = "gitlab.freedesktop.org";
+            owner = "monado";
+            repo = "monado";
+            rev = "f037264d23e2472a444a157370647fcd601ed81b";
+            hash = "sha256-exHbecudAy57szL7kut7/fBYCoekEs3riZzhMtFWS/c=";
+          };
+          monado = final.applyPatches {
+            src = monadoSrc;
+            postPatch = ''
+              ${wivrnSrc}/patches/apply.sh ${wivrnSrc}/patches/monado/*
+            '';
+          };
+        in
+        {
+          wivrn = prev.wivrn.overrideAttrs (old: {
+            version = "26.9";
+            src = wivrnSrc;
+            inherit monado;
+
+            # Keep the nixpkgs build flags, but point the release metadata and
+            # vendored Monado path at the matching 26.9 sources.
+            cmakeFlags = map (flag:
+              builtins.replaceStrings
+                [ "v26.6.2" (toString old.monado) ]
+                [ "v26.9" (toString monado) ]
+                flag
+            ) old.cmakeFlags;
+          });
+        }
+      )
     ];
     pkgs = import nixpkgs {
       inherit system overlays;
