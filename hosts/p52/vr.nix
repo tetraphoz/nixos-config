@@ -1,28 +1,9 @@
 {
-  modulesPath,
   pkgs,
   ...
 }:
 
-let
-  # nixos-26.05 currently declares the removed
-  # services.wivrn.defaultRuntime option without a default, which makes the
-  # otherwise usable module throw while evaluating any system.  Keep the
-  # pinned module in use, but drop only that stale compatibility declaration.
-  # This can be removed once the nixpkgs module no longer contains it.
-  wivrnModule = builtins.toFile "wivrn-module.nix" (
-    builtins.replaceStrings
-      [
-        "  imports = [\n    (lib.mkRemovedOptionModule [ \"services\" \"wivrn\" \"defaultRuntime\" ] ''\n      WiVRn now manages the active runtime itself, so this option has been removed.\n    '')\n  ];"
-      ]
-      [ "" ]
-      (builtins.readFile "${modulesPath}/services/video/wivrn.nix")
-  );
-in
 {
-  disabledModules = [ "services/video/wivrn.nix" ];
-  imports = [ wivrnModule ];
-
   # WiVRn is the OpenXR runtime/streaming server.  WayVR is launched by
   # WiVRn when a headset connects, so it appears in the headset as the
   # desktop environment/overlay application.

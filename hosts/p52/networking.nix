@@ -40,6 +40,24 @@
 
     allowedUDPPorts = [
     ];
+
+    # Sunshine's Moonlight/web UI ports must be reachable through the tailnet,
+    # but not through LAN or public interfaces.
+    interfaces.tailscale0 = {
+      allowedTCPPorts = [
+        47984
+        47989
+        47990
+        48010
+      ];
+      allowedUDPPorts = [
+        47998
+        47999
+        48000
+        48002
+        48010
+      ];
+    };
   };
 
 

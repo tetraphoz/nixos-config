@@ -17,7 +17,8 @@
   # this host's display and audio session without a separate service account.
   services.sunshine = {
     enable = true;
-    openFirewall = true;
+    # Sunshine ports are allowed only on tailscale0 in networking.nix.
+    openFirewall = false;
 
     # Allow Sunshine's preferred DRM/KMS capture path.  This is needed for
     # reliable capture with the P52's NVIDIA/PRIME display setup.
