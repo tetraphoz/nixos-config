@@ -10,6 +10,7 @@
 
     # Hardware / desktop
     ./desktop.nix
+    ./hyprland.nix
     ./power.nix
     ./nvidia.nix
 

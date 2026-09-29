@@ -35,6 +35,7 @@
     # scanning while keeping every other inbound service closed by default.
     allowedTCPPorts = [
       2222
+      45013 # SimpleX
       # 8096 # Jellyfin
     ];
 

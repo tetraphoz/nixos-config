@@ -161,6 +161,18 @@ in
   #
   # Desktop applications, themes and utilities
   #
+  # Install Thunar through its NixOS module so its plug-ins are placed in
+  # Thunar's actual plug-in search path.  Installing thunar and a plug-in as
+  # unrelated profile entries leaves the plug-in invisible to the file
+  # manager.
+  programs.thunar = {
+    enable = true;
+    plugins = with pkgs; [
+      thunar-archive-plugin
+      thunar-volman
+    ];
+  };
+
   environment.systemPackages = with pkgs; [
     # X11
     xinit
@@ -185,7 +197,9 @@ in
     tesseract
 
     # File manager and previews
-    thunar-volman
+    # file-roller is the graphical archive manager used by
+    # thunar-archive-plugin (which provides the Thunar context-menu actions).
+    file-roller
     polkit_gnome
     vips
     imagemagick

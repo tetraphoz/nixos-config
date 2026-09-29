@@ -29,6 +29,17 @@
       # USB ID to libfprint's unrelated Synaptics driver does not make this
       # device work (and was the reason the previous attempt was ineffective).
       (final: prev: {
+        # nixpkgs currently packages REAPER 7.73; pin the current upstream
+        # Linux x86_64 release instead of waiting for the stable branch to
+        # catch up. Keep the exact vendor archive hash fixed in the flake.
+        reaper = prev.reaper.overrideAttrs (old: {
+          version = "7.80";
+          src = final.fetchurl {
+            url = "https://www.reaper.fm/files/7.x/reaper780_linux_x86_64.tar.xz";
+            hash = "sha256-lfngCTNZdBQw/hUraVU4+wihBt8FIzPs7CBWI5yNXGc=";
+          };
+        });
+
         # Also fix the DBus activation helper shipped by open-fprintd.  Its
         # upstream package fixes the systemd units but leaves this one /usr
         # path behind; the explicit NixOS unit normally masks that bug, while

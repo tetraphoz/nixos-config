@@ -48,6 +48,11 @@
     rofi
     dunst
     picom
+    waybar
+    wofi
+    wl-clipboard
+    grim
+    slurp
     redshift
     xss-lock
     xidlehook
@@ -60,7 +65,8 @@
 
     # Files
 
-    thunar
+    # Thunar is installed by programs.thunar in desktop.nix so its archive
+    # and volume-management plug-ins are included in the same derivation.
     ranger
     yazi
     sxiv
@@ -109,6 +115,7 @@
     nmap
     tcpdump
     qbittorrent
+    simplex-chat-desktop
 
     # Sync
 
@@ -128,6 +135,62 @@
     yt-dlp
     rclone
   ];
+
+  # A small Wayland-native session config. XMonad remains the default login
+  # session; choose Hyprland in Ly when testing the WiVRn/WayVR setup.
+  xdg.configFile."hypr/hyprland.conf".text = ''
+    $mainMod = SUPER
+    $terminal = kitty
+    $menu = wofi --show drun
+
+    exec-once = dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
+    exec-once = waybar
+    exec-once = dunst
+
+    input {
+      kb_layout = us
+      kb_variant = altgr-intl
+      follow_mouse = 1
+    }
+
+    general {
+      gaps_in = 4
+      gaps_out = 8
+      border_size = 2
+      layout = dwindle
+    }
+
+    decoration {
+      rounding = 6
+    }
+
+    animations {
+      enabled = yes
+    }
+
+    bind = $mainMod, Return, exec, $terminal
+    bind = $mainMod, D, exec, $menu
+    bind = $mainMod, Q, killactive
+    bind = $mainMod SHIFT, E, exit
+    bind = $mainMod, F, fullscreen
+    bind = $mainMod, V, togglefloating
+
+    bind = $mainMod, H, movefocus, l
+    bind = $mainMod, L, movefocus, r
+    bind = $mainMod, K, movefocus, u
+    bind = $mainMod, J, movefocus, d
+
+    bind = $mainMod, 1, workspace, 1
+    bind = $mainMod, 2, workspace, 2
+    bind = $mainMod, 3, workspace, 3
+    bind = $mainMod, 4, workspace, 4
+    bind = $mainMod, 5, workspace, 5
+    bind = $mainMod SHIFT, 1, movetoworkspace, 1
+    bind = $mainMod SHIFT, 2, movetoworkspace, 2
+    bind = $mainMod SHIFT, 3, movetoworkspace, 3
+    bind = $mainMod SHIFT, 4, movetoworkspace, 4
+    bind = $mainMod SHIFT, 5, movetoworkspace, 5
+  '';
 
   gtk = {
     enable = true;
@@ -329,6 +392,14 @@ EOF
 
   xdg.configFile."kitty".source =
     ../dotfiles/kitty;
+
+  # Thunar uses exo-open for its "Open Terminal Here" action.  exo first
+  # consults this file and expects the executable name (not a desktop-file
+  # ID), so this keeps that action on the same Kitty terminal used by XMonad.
+  # exo launches it with Thunar's current directory as its working directory.
+  xdg.configFile."xfce4/helpers.rc".text = ''
+    TerminalEmulator=kitty
+  '';
 
   xdg.configFile."mpv".source =
     ../dotfiles/mpv;

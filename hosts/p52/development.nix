@@ -63,6 +63,14 @@
     gnuplot
     pre-commit
 
+    # Nix workflow and linting
+    nh
+    nix-output-monitor
+    nvd
+    nix-index
+    statix
+    deadnix
+
     jdk17
     kotlin
     android-studio

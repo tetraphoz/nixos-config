@@ -9,6 +9,7 @@ It’s set up for a desktop-focused workflow using *Doom Emacs*, *XMonad*, and a
 - *Home Manager config* under =home/=
 - *Dotfiles* under =dotfiles/=
 - *Doom Emacs config* in =dotfiles/doom.d/=
+- *Detailed configuration and operations docs* in =docs/=
 
 ** Repository Layout
 
@@ -104,8 +105,9 @@ journalctl -u open-fprintd -u python3-validity -b
 journalctl -k -b | grep -iE 'usb|fprint|validity|synaptics'
 #+end_src
 
-Suspend/resume units are enabled by the NixOS module. A password remains
-available as the fallback authentication method. The fingerprint database is
+Suspend/resume units are enabled by the NixOS module. Password authentication
+remains available for TTY login, sudo, and other configured PAM services; Ly
+itself is configured for fingerprint-only login. The fingerprint database is
 managed by the backend; do not copy it between machines.
 
 *** Pywal Integration

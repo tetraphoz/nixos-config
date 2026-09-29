@@ -5,8 +5,9 @@ export XDG_SESSION_TYPE=x11
 # Lock when logind requests a lock or before suspend/lid sleep.
 xss-lock --transfer-sleep-lock -- slock &
 
-# Lock after 15 minutes of inactivity, except during fullscreen apps.
-xidlehook --not-when-fullscreen --timer 900 'slock' '' &
+# Lock after 15 minutes of inactivity, except during fullscreen apps or audio playback.
+# PipeWire's PulseAudio compatibility layer lets xidlehook detect active audio.
+xidlehook --not-when-fullscreen --not-when-audio --timer 900 'slock' '' &
 
 dunst -b &
 wmname LG3D  &
