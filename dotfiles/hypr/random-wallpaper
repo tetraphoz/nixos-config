@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mapfile -d '' wallpapers < <(
+  find /media/img/wallpapers -type f \
+    \( -iname '*.avif' -o -iname '*.bmp' -o -iname '*.jpeg' -o -iname '*.jpg' -o -iname '*.png' -o -iname '*.webp' \) \
+    -print0
+)
+
+if (( ${#wallpapers[@]} == 0 )); then
+  echo "no wallpapers found in /media/img/wallpapers" >&2
+  exit 1
+fi
+
+wallpaper="${wallpapers[RANDOM % ${#wallpapers[@]}]}"
+for _ in {1..30}; do
+  if hyprctl hyprpaper wallpaper ",$wallpaper" >/dev/null 2>&1; then
+    exit 0
+  fi
+  sleep 0.2
+done
+
+echo "hyprpaper did not become available" >&2
+exit 1

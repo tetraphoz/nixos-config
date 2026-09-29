@@ -17,23 +17,28 @@ new boot default. After confirming it works, use `switch` to make it the
 current system generation. The `ns` and `nst` Zsh aliases run the switch and
 test commands respectively.
 
-The flake also provides a standalone Home Manager output:
+Home Manager is integrated with this NixOS flake, so `nixos-rebuild` applies
+the system and user configurations together; no separate Home Manager command
+is needed. The flake also exposes a standalone `tetra` output for independent
+deployments:
 
 ```sh
-home-manager switch --flake .#tetra
+nix run github:nix-community/home-manager/release-26.05 -- switch --flake .#tetra
 ```
 
-Use that only when deploying Home Manager independently. On this machine,
-the usual path is `nixos-rebuild`, which applies the integrated Home Manager
-configuration together with the system configuration.
+Both configurations include the XMonad and Hyprland modules. NixOS controls
+which sessions Ly offers by enabling their system modules; XMonad and Hyprland
+are enabled on this host.
 
 ## Desktop sessions
 
 XMonad is the default Ly session. Select **Hyprland** in Ly to test the
 optional Wayland session and the WiVRn/WayVR desktop path. Its user
-configuration is managed by Home Manager. The main bindings are `Super+Return`
-for Kitty, `Super+D` for Wofi, `Super+Q` to close a window, and `Super+1`–`5`
-to switch workspaces.
+configuration is managed alongside the XMonad config by Home Manager. Use
+`nwg-displays` to arrange monitors and select modes; it saves settings to
+`~/.config/hypr/monitors.conf`. Waybar is positioned at the bottom. The Hyprland
+profile mirrors the main XMonad shortcuts; `Super+Q` reloads Hyprland,
+`Super+Shift+Q` exits, and `Super+Shift+C` closes a window.
 
 In the X11 session, the idle-lock timer locks after 15 minutes unless a
 fullscreen application or audio playback is active. The separate logind lock

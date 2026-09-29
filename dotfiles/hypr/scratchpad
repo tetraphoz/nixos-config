@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+case "${1:-}" in
+  terminal)
+    class="scratch"
+    workspace="terminal"
+    command=(kitty --class scratch)
+    ;;
+  ncmpcpp)
+    class="scratchNcm"
+    workspace="ncmpcpp"
+    command=(kitty --class scratchNcm -e ncmpcpp)
+    ;;
+  *)
+    echo "usage: hypr-scratchpad {terminal|ncmpcpp}" >&2
+    exit 2
+    ;;
+esac
+
+if ! hyprctl clients -j | jq -e --arg class "$class" 'any(.[]; .class == $class)' >/dev/null; then
+  "${command[@]}" >/dev/null 2>&1 &
+fi
+
+hyprctl dispatch togglespecialworkspace "$workspace"

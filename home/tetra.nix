@@ -42,21 +42,9 @@
     yq
     btop
 
-    # WM
+    # Shared notifications
 
-    xmobar
-    rofi
     dunst
-    picom
-    waybar
-    wofi
-    wl-clipboard
-    grim
-    slurp
-    redshift
-    xss-lock
-    xidlehook
-    pywal16
 
     # Browsers
 
@@ -73,7 +61,6 @@
 
     # Development
 
-
     # Editors
 
     emacs
@@ -83,6 +70,7 @@
 
     mpd
     ncmpcpp
+    mpc
     cava
     spotify
     nicotine-plus
@@ -130,80 +118,22 @@
 
     # Misc
 
-    flameshot
-    feh
     yt-dlp
     rclone
   ];
 
-  # A small Wayland-native session config. XMonad remains the default login
-  # session; choose Hyprland in Ly when testing the WiVRn/WayVR setup.
-  xdg.configFile."hypr/hyprland.conf".text = ''
-    $mainMod = SUPER
-    $terminal = kitty
-    $menu = wofi --show drun
-
-    exec-once = dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
-    exec-once = waybar
-    exec-once = dunst
-
-    input {
-      kb_layout = us
-      kb_variant = altgr-intl
-      follow_mouse = 1
-    }
-
-    general {
-      gaps_in = 4
-      gaps_out = 8
-      border_size = 2
-      layout = dwindle
-    }
-
-    decoration {
-      rounding = 6
-    }
-
-    animations {
-      enabled = yes
-    }
-
-    bind = $mainMod, Return, exec, $terminal
-    bind = $mainMod, D, exec, $menu
-    bind = $mainMod, Q, killactive
-    bind = $mainMod SHIFT, E, exit
-    bind = $mainMod, F, fullscreen
-    bind = $mainMod, V, togglefloating
-
-    bind = $mainMod, H, movefocus, l
-    bind = $mainMod, L, movefocus, r
-    bind = $mainMod, K, movefocus, u
-    bind = $mainMod, J, movefocus, d
-
-    bind = $mainMod, 1, workspace, 1
-    bind = $mainMod, 2, workspace, 2
-    bind = $mainMod, 3, workspace, 3
-    bind = $mainMod, 4, workspace, 4
-    bind = $mainMod, 5, workspace, 5
-    bind = $mainMod SHIFT, 1, movetoworkspace, 1
-    bind = $mainMod SHIFT, 2, movetoworkspace, 2
-    bind = $mainMod SHIFT, 3, movetoworkspace, 3
-    bind = $mainMod SHIFT, 4, movetoworkspace, 4
-    bind = $mainMod SHIFT, 5, movetoworkspace, 5
-  '';
-
   gtk = {
     enable = true;
-  
+
     theme = {
       name = "Colloid-Dark";
       package = pkgs.colloid-gtk-theme;
     };
-  
+
     gtk3.extraConfig = {
       gtk-application-prefer-dark-theme = true;
     };
-  
+
     gtk4.extraConfig = {
       gtk-application-prefer-dark-theme = true;
     };
@@ -239,7 +169,7 @@
       ns = "sudo nixos-rebuild switch --flake /etc/nixos#p52";
       nst = "sudo nixos-rebuild test --flake /etc/nixos#p52";
       nfu = "cd /etc/nixos && sudo nix flake update";
-  
+
       ".." = "cd ..";
       ll = "ls -lah";
       g = "git";
@@ -265,32 +195,31 @@
 
   # Pi keeps its settings outside XDG_CONFIG_HOME.  Update only the model
   # preference so Pi can still manage the rest of this mutable settings file.
-  home.activation.configurePi =
-    config.lib.dag.entryAfter [ "writeBoundary" ] ''
-      PI_SETTINGS="$HOME/.pi/agent/settings.json"
-      mkdir -p "$(dirname "$PI_SETTINGS")"
+  home.activation.configurePi = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    PI_SETTINGS="$HOME/.pi/agent/settings.json"
+    mkdir -p "$(dirname "$PI_SETTINGS")"
 
-      if [ -f "$PI_SETTINGS" ]; then
-        tmp="$(mktemp)"
-        if ${pkgs.jq}/bin/jq \
-          '.defaultProvider = "openai" | .defaultModel = "gpt-6-luna"' \
-          "$PI_SETTINGS" > "$tmp"; then
-          chmod --reference="$PI_SETTINGS" "$tmp" 2>/dev/null || true
-          if ! cmp -s "$tmp" "$PI_SETTINGS"; then
-            mv "$tmp" "$PI_SETTINGS"
-          else
-            rm -f "$tmp"
-          fi
+    if [ -f "$PI_SETTINGS" ]; then
+      tmp="$(mktemp)"
+      if ${pkgs.jq}/bin/jq \
+        '.defaultProvider = "openai" | .defaultModel = "gpt-6-luna"' \
+        "$PI_SETTINGS" > "$tmp"; then
+        chmod --reference="$PI_SETTINGS" "$tmp" 2>/dev/null || true
+        if ! cmp -s "$tmp" "$PI_SETTINGS"; then
+          mv "$tmp" "$PI_SETTINGS"
         else
           rm -f "$tmp"
-          echo "warning: could not update Pi settings; leaving them unchanged" >&2
         fi
       else
-        printf '%s\\n' \
-          '{"defaultProvider":"openai","defaultModel":"gpt-6-luna"}' \
-          > "$PI_SETTINGS"
+        rm -f "$tmp"
+        echo "warning: could not update Pi settings; leaving them unchanged" >&2
       fi
-    '';
+    else
+      printf '%s\\n' \
+        '{"defaultProvider":"openai","defaultModel":"gpt-6-luna"}' \
+        > "$PI_SETTINGS"
+    fi
+  '';
 
   # Run the Doom-managed Emacs daemon as the user, so emacsclient can reach
   # the same configuration and authentication agent as the desktop session.
@@ -306,20 +235,20 @@
 
   services.mpd = {
     enable = true;
-  
+
     musicDirectory = "/media/music";
-  
+
     network = {
       listenAddress = "127.0.0.1";
       port = 6600;
     };
-  
+
     extraConfig = ''
       audio_output {
         type "pipewire"
         name "PipeWire"
       }
-  
+
       audio_output {
         type "fifo"
         name "Visualizer"
@@ -337,61 +266,12 @@
   # Do not start MPD before the separate media filesystem is available.
   systemd.user.services.mpd.Unit.RequiresMountsFor = [ "/media/music" ];
 
-  home.file.".xinitrc".source =
-    ../dotfiles/xinitrc;
-
-  # Ly launches the X session through .xsession instead of startx/.xinitrc.
-  home.file.".xsession" = {
-    source = ../dotfiles/xinitrc;
-    executable = true;
-  };
-
-  # Keep the legacy default path in sync too.  Xmobar launched without an
-  # explicit config path reads ~/.xmobarrc.
-  home.file.".xmobarrc".source = ../dotfiles/xmobarrc;
-
-  # Keep the generated XMonad build directory writable.  Managing the whole
-  # directory as one Home Manager symlink makes xmonad --recompile try to
-  # write into the read-only Nix store.
-  home.file.".xmonad/xmonad.hs".source = ../dotfiles/xmonad/xmonad.hs;
-
-  home.activation.linkWalColors =
-    config.lib.dag.entryAfter [ "writeBoundary" ] ''
-      mkdir -p "$HOME/.xmonad/lib"
-      if [ -f "$HOME/.cache/wal/Colors.hs" ]; then
-        ln -sfn "$HOME/.cache/wal/Colors.hs" \
-          "$HOME/.xmonad/lib/Colors.hs"
-      elif [ ! -e "$HOME/.xmonad/lib/Colors.hs" ]; then
-        cat > "$HOME/.xmonad/lib/Colors.hs" <<'EOF'
-module Colors where
-
-background = "#17081e"
-foreground = "#c4c3c4"
-
-color0 = "#17081e"
-color1 = "#ff5555"
-color2 = "#50fa7b"
-color3 = "#f1fa8c"
-color4 = "#bd93f9"
-color5 = "#ff79c6"
-color6 = "#8be9fd"
-color7 = "#c4c3c4"
-color8 = "#6272a4"
-color9 = "#ff6e6e"
-EOF
-      fi
-    '';
-
-
-  home.file.".doom.d".source =
-    ../dotfiles/doom.d;
+  home.file.".doom.d".source = ../dotfiles/doom.d;
 
   #home.file.".emacs.d".source =
   #  ../dotfiles/.emacs.d;
 
-
-  xdg.configFile."kitty".source =
-    ../dotfiles/kitty;
+  xdg.configFile."kitty".source = ../dotfiles/kitty;
 
   # Thunar uses exo-open for its "Open Terminal Here" action.  exo first
   # consults this file and expects the executable name (not a desktop-file
@@ -401,26 +281,11 @@ EOF
     TerminalEmulator=kitty
   '';
 
-  xdg.configFile."mpv".source =
-    ../dotfiles/mpv;
+  xdg.configFile."mpv".source = ../dotfiles/mpv;
 
-  xdg.configFile."wal/templates".source =
-    ../dotfiles/wal/templates;
+  xdg.configFile."dunst".source = ../dotfiles/dunst;
 
-  xdg.configFile."xmobar/xmobarrc".source =
-    ../dotfiles/xmobarrc;
-
-  xdg.configFile."rofi".source =
-    ../dotfiles/rofi;
-
-  xdg.configFile."dunst".source =
-    ../dotfiles/dunst;
-
-  xdg.configFile."picom".source =
-    ../dotfiles/picom;
-
-  xdg.configFile."ncmpcpp".source =
-    ../dotfiles/ncmpcpp;
+  xdg.configFile."ncmpcpp".source = ../dotfiles/ncmpcpp;
 
   # Use dedicated desktop applications when opening files from Yazi.  Yazi's
   # built-in image preview remains available in the preview pane, while Enter
@@ -458,37 +323,39 @@ EOF
     comment = "Music production and tracker DAW";
     exec = "renoise %U";
     terminal = false;
-    categories = [ "AudioVideo" "Audio" ];
+    categories = [
+      "AudioVideo"
+      "Audio"
+    ];
   };
 
   home.file.".local/bin/renoise" = {
-      executable = true;
-      text = ''
+    executable = true;
+    text = ''
       #!/usr/bin/env bash
       exec "${config.home.homeDirectory}/Applications/Renoise/renoise" "$@"
-      '';
+    '';
   };
 
-  home.activation.installRofipass =
-    config.lib.dag.entryAfter [ "writeBoundary" ] ''
-      ROFIPASS_DIR="$HOME/.local/share/rofipass"
-      ROFIPASS_BIN="$HOME/.local/bin/rofipass"
-  
-      if [ ! -d "$ROFIPASS_DIR/.git" ]; then
-        mkdir -p "$(dirname "$ROFIPASS_DIR")"
-        if ! ${pkgs.git}/bin/git clone \
-          https://codeberg.org/aocoronel/rofipass \
-          "$ROFIPASS_DIR"; then
-          echo "warning: rofipass could not be downloaded; continuing without it" >&2
-        fi
-      fi
+  home.activation.installRofipass = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    ROFIPASS_DIR="$HOME/.local/share/rofipass"
+    ROFIPASS_BIN="$HOME/.local/bin/rofipass"
 
-      if [ -x "$ROFIPASS_DIR/src/rofipass" ]; then
-        mkdir -p "$(dirname "$ROFIPASS_BIN")"
-        chmod 700 "$ROFIPASS_DIR/src/rofipass"
-        ln -sfn "$ROFIPASS_DIR/src/rofipass" "$ROFIPASS_BIN"
+    if [ ! -d "$ROFIPASS_DIR/.git" ]; then
+      mkdir -p "$(dirname "$ROFIPASS_DIR")"
+      if ! ${pkgs.git}/bin/git clone \
+        https://codeberg.org/aocoronel/rofipass \
+        "$ROFIPASS_DIR"; then
+        echo "warning: rofipass could not be downloaded; continuing without it" >&2
       fi
-    '';
+    fi
+
+    if [ -x "$ROFIPASS_DIR/src/rofipass" ]; then
+      mkdir -p "$(dirname "$ROFIPASS_BIN")"
+      chmod 700 "$ROFIPASS_DIR/src/rofipass"
+      ln -sfn "$ROFIPASS_DIR/src/rofipass" "$ROFIPASS_BIN"
+    fi
+  '';
 
   # xdg.configFile."wal".source =
   #   ../dotfiles/wal;

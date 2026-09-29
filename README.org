@@ -22,6 +22,12 @@ It’s set up for a desktop-focused workflow using *Doom Emacs* and *XMonad*, wi
 │   │   ├── init.el
 │   │   └── packages.el
 │   ├── dunst
+│   ├── hypr
+│   │   ├── hyprland.conf
+│   │   ├── random-wallpaper
+│   │   ├── scratchpad
+│   │   ├── toggle-border
+│   │   └── window-picker
 │   ├── kitty
 │   ├── mpd
 │   ├── mpv
@@ -29,6 +35,8 @@ It’s set up for a desktop-focused workflow using *Doom Emacs* and *XMonad*, wi
 │   ├── picom
 │   ├── rofi
 │   ├── wal
+│   ├── waybar
+│   │   └── config
 │   ├── xinitrc
 │   ├── xmobarrc
 │   └── xmonad
@@ -40,7 +48,9 @@ It’s set up for a desktop-focused workflow using *Doom Emacs* and *XMonad*, wi
 │   ├── configuration.md
 │   └── operations.md
 ├── home
-│   └── tetra.nix
+│   ├── hyprland.nix
+│   ├── tetra.nix
+│   └── xmonad.nix
 └── hosts
     └── p52
         ├── configuration.nix
@@ -136,8 +146,9 @@ Defines the NixOS flake inputs and outputs.
 *** =hosts/p52=
 Host-specific NixOS configuration for the machine =p52=.
 
-*** =home/tetra.nix=
-Home Manager configuration for the user =tetra=.
+*** Home Manager
+=home/tetra.nix= contains shared settings; =home/xmonad.nix= and
+=home/hyprland.nix= contain the session-specific configs and package sets.
 
 *** =dotfiles/=
 Contains application configs that are symlinked or managed through the flake/home setup.
@@ -150,13 +161,14 @@ sudo nixos-rebuild switch --flake .#p52
 #+end_src
 
 *** Build Home Manager config
-The normal path is the NixOS-integrated Home Manager module, so the system
-command above applies both configurations together. For a standalone Home
-Manager deployment, the flake also exposes the
-=homeConfigurations.tetra= output:
+The usual path is the NixOS-integrated Home Manager module, so the system
+command above applies both configurations together. The flake also exposes a
+standalone =tetra= output for independent deployments:
 #+begin_src bash
-home-manager switch --flake .#tetra
+nix run github:nix-community/home-manager/release-26.05 -- switch --flake .#tetra
 #+end_src
+Both the integrated and standalone configurations include the XMonad and
+Hyprland modules and package sets.
 
 *** Remote desktop and private networking
 Sunshine is enabled as a Moonlight host for the active X11 session. Its

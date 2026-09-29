@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mode="${1:-focus}"
+selection="$(hyprctl clients -j | jq -r '.[] | select(.mapped) | [.address, ((.class // "app") + ": " + (.title // ""))] | @tsv' | wofi --dmenu --prompt="Window" || true)"
+address="${selection%%$'\t'*}"
+
+[[ -n "$address" ]] || exit 0
+
+if [[ "$mode" == "bring" ]]; then
+  hyprctl dispatch movetoworkspace "current,address:$address"
+fi
+
+hyprctl dispatch focuswindow "address:$address"

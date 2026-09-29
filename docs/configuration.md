@@ -46,11 +46,20 @@ hardware file and the feature modules below.
 | `games.nix` | Steam, GameMode, MangoHud, Proton utilities, and Prism Launcher. |
 | `vr.nix` | WiVRn, Steam OpenXR runtime integration, and WayVR. |
 
-`home/tetra.nix` manages user applications and settings: shell, Git, desktop
-applications, MPD, XMonad-related links, Kitty, and other dotfiles. It also
-installs Wayland utilities and writes the Hyprland configuration; XMonad
-remains the default login session. The application configurations themselves
-are under `dotfiles/`.
+Home Manager is split into shared settings in `home/tetra.nix` and session
+modules in `home/xmonad.nix` and `home/hyprland.nix`. The integrated and
+standalone `tetra` configurations import both session modules, so both sets of
+configs and packages are active at once. NixOS controls which sessions are
+available to Ly through its system modules; XMonad and Hyprland are enabled on
+this host.
+
+The Hyprland profile installs Waybar, Wofi, `nwg-displays`, and Wayland
+utilities, and links `dotfiles/hypr/hyprland.conf`. Waybar's configuration is
+in `dotfiles/waybar/config`; its bar is at the bottom of the screen.
+Hyprland sources the mutable `~/.config/hypr/monitors.conf` created and
+updated by `nwg-displays`; Home Manager seeds it with the preferred
+external-monitor mode on first activation. XMonad remains the default login
+session. Application configurations are under `dotfiles/`.
 
 ## Hardware and storage notes
 
