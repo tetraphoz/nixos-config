@@ -32,7 +32,8 @@ hardware file and the feature modules below.
 | File | Responsibility |
 | --- | --- |
 | `hardware-configuration.nix` | LUKS, Btrfs/ext4 filesystems, EFI, and swap generated for this machine. |
-| `desktop.nix` | X11, XMonad, Ly login manager, autorandr, Thunar, fonts, OBS, and desktop support. |
+| `desktop.nix` | X11, XMonad (the default Ly session), Ly login manager, autorandr, Thunar, fonts, OBS, and desktop support. |
+| `hyprland.nix` | Enables the optional Hyprland Wayland session and Xwayland; the user session configuration is managed from Home Manager. |
 | `nvidia.nix` | Quadro P2000 driver and Intel/NVIDIA PRIME configuration, including reverse PRIME for the HDMI output. |
 | `power.nix` | Intel microcode, zram, TLP, Btrfs scrubbing, and Snapper root snapshots. |
 | `development.nix` | System-wide developer tools, including Nix workflow/lint tools, plus direnv. |
@@ -46,8 +47,10 @@ hardware file and the feature modules below.
 | `vr.nix` | WiVRn, Steam OpenXR runtime integration, and WayVR. |
 
 `home/tetra.nix` manages user applications and settings: shell, Git, desktop
-applications, MPD, XMonad-related links, Kitty, and other dotfiles. The
-application configurations themselves are under `dotfiles/`.
+applications, MPD, XMonad-related links, Kitty, and other dotfiles. It also
+installs Wayland utilities and writes the Hyprland configuration; XMonad
+remains the default login session. The application configurations themselves
+are under `dotfiles/`.
 
 ## Hardware and storage notes
 
@@ -78,6 +81,7 @@ and DSSI search paths.
 - SSH listens on TCP port `2222`; password and keyboard-interactive
   authentication are disabled. Ensure an authorized public key is installed
   before relying on remote SSH access.
+- TCP port `45013` is allowed through the host firewall for SimpleX.
 - Sunshine's streaming ports are allowed on `tailscale0`, not generally on
   LAN/public interfaces. Tailscale must be authenticated after initial setup.
 - The Ly PAM stack is configured for fingerprint-only login. Password login

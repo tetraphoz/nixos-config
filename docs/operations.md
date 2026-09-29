@@ -27,6 +27,18 @@ Use that only when deploying Home Manager independently. On this machine,
 the usual path is `nixos-rebuild`, which applies the integrated Home Manager
 configuration together with the system configuration.
 
+## Desktop sessions
+
+XMonad is the default Ly session. Select **Hyprland** in Ly to test the
+optional Wayland session and the WiVRn/WayVR desktop path. Its user
+configuration is managed by Home Manager. The main bindings are `Super+Return`
+for Kitty, `Super+D` for Wofi, `Super+Q` to close a window, and `Super+1`–`5`
+to switch workspaces.
+
+In the X11 session, the idle-lock timer locks after 15 minutes unless a
+fullscreen application or audio playback is active. The separate logind lock
+on suspend still applies.
+
 ## Nix workflow tools
 
 The developer package set includes:
@@ -69,7 +81,7 @@ collection to preserve generations or package paths that are no longer rooted.
 
 ## Service checks
 
-### Tailscale, SSH, and Sunshine
+### Tailscale, SSH, Sunshine, and SimpleX
 
 ```sh
 sudo tailscale up
@@ -79,7 +91,8 @@ systemctl status sshd tailscaled
 
 SSH is key-only on port `2222`. Sunshine is intended to be accessed through
 the tailnet; configure its credentials and pair Moonlight clients through its
-web UI after Tailscale is connected.
+web UI after Tailscale is connected. Its streaming ports are allowed only on
+`tailscale0`. The firewall also allows inbound TCP port `45013` for SimpleX.
 
 ### Fingerprint reader
 

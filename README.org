@@ -1,7 +1,7 @@
 * NixOS Flake + Doom Emacs Dotfiles
 
 This repository contains my NixOS flake, host configuration, home configuration, and dotfiles.  
-It’s set up for a desktop-focused workflow using *Doom Emacs*, *XMonad*, and a collection of terminal and X11 app configs.
+It’s set up for a desktop-focused workflow using *Doom Emacs* and *XMonad*, with an optional *Hyprland* Wayland session for the WiVRn/WayVR VR desktop path, plus terminal and desktop app configs.
 
 ** Overview
 
@@ -34,6 +34,11 @@ It’s set up for a desktop-focused workflow using *Doom Emacs*, *XMonad*, and a
 │   └── xmonad
 ├── flake.nix
 ├── flake.lock
+├── README.org
+├── docs
+│   ├── README.md
+│   ├── configuration.md
+│   └── operations.md
 ├── home
 │   └── tetra.nix
 └── hosts
@@ -41,6 +46,7 @@ It’s set up for a desktop-focused workflow using *Doom Emacs*, *XMonad*, and a
         ├── configuration.nix
         ├── hardware-configuration.nix
         ├── desktop.nix
+        ├── hyprland.nix
         ├── development.nix
         ├── emacs.nix
         └── ...
@@ -59,8 +65,9 @@ Doom Emacs is configured in:
 *** Desktop Configuration
 This repo includes configs for:
 
-- *XMonad*
-- *XMobarb*
+- *XMonad* (the default login session)
+- *Hyprland* (optional Wayland session)
+- *Xmobar*
 - *Xinit*
 - *Dunst*
 - *Picom*
@@ -69,6 +76,11 @@ This repo includes configs for:
 - *MPV*
 - *MPD*
 - *ncmpcpp*
+
+XMonad remains the default Ly session. Hyprland can be selected at Ly when
+using the WayVR/WiVRn desktop path. In the X11 session, the idle-lock timer
+waits 15 minutes and is suppressed while a fullscreen application or audio
+playback is active.
 
 *** Fingerprint Authentication
 The ThinkPad P52 exposes a Synaptics Metallica MIS reader with USB ID
@@ -160,8 +172,9 @@ sudo tailscale up
 sudo tailscale status
 #+end_src
 
-No router port forwarding is needed; access is controlled by your Tailscale
-tailnet policy.
+No router port forwarding is needed for Sunshine; access is controlled by
+your Tailscale tailnet policy. SimpleX Chat Desktop is installed through Home
+Manager, and the host firewall allows inbound TCP port =45013= for SimpleX.
 
 *** Validate the configuration
 #+begin_src bash
