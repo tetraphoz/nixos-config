@@ -2,7 +2,7 @@
 
 {
   
-  # Load NVIDIA driver for X11
+  # Provide the NVIDIA driver for Xorg and the Wayland/Xwayland graphics stack.
   services.xserver.videoDrivers = [
     "nvidia"
   #  "modesetting"

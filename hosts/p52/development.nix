@@ -48,10 +48,6 @@
     python3
     uv
     basedpyright
-    #pipx
-
-    #nodejs
-    #npm
     typescript
 
     php
@@ -76,7 +72,7 @@
     android-studio
     android-tools
 
-    # Ai
+    # AI
     aider-chat
     pi-coding-agent
 

@@ -25,14 +25,12 @@
       overlays = [
         pi.overlays.default
 
-        # The P52's 06cb:009a reader is a Validity/Synaptics device that needs
-        # the proprietary protocol implemented by python-validity.  Adding the
-        # USB ID to libfprint's unrelated Synaptics driver does not make this
-        # device work (and was the reason the previous attempt was ineffective).
+        # The P52's 06cb:009a reader is a Validity sensor. It needs the
+        # protocol implemented by python-validity; libfprint's Synaptics
+        # driver supports different hardware despite the shared vendor name.
         (final: prev: {
-          # nixpkgs currently packages REAPER 7.73; pin the current upstream
-          # Linux x86_64 release instead of waiting for the stable branch to
-          # catch up. Keep the exact vendor archive hash fixed in the flake.
+          # Use the upstream Linux x86_64 release until the pinned nixpkgs
+          # branch catches up. Update the version, URL, and archive hash together.
           reaper = prev.reaper.overrideAttrs (old: {
             version = "7.80";
             src = final.fetchurl {
@@ -41,10 +39,9 @@
             };
           });
 
-          # Also fix the DBus activation helper shipped by open-fprintd.  Its
-          # upstream package fixes the systemd units but leaves this one /usr
-          # path behind; the explicit NixOS unit normally masks that bug, while
-          # this makes activation safe during boot as well.
+          # The DBus activation file still invokes /usr/lib/open-fprintd,
+          # which does not exist on NixOS. Point it at the executable in this
+          # package output so DBus activation works independently of the unit.
           open-fprintd-p52 = prev.open-fprintd.overrideAttrs (old: {
             postInstall = (old.postInstall or "") + ''
               substituteInPlace $out/share/dbus-1/system-services/net.reactivated.Fprint.service \
@@ -112,9 +109,8 @@
           };
         })
 
-        # nixos-26.05 still ships WiVRn 26.6.2, while the headset client used
-        # on this network is 26.9. Build the matching upstream release until
-        # nixpkgs updates its WiVRn package.
+        # Keep WiVRn and its bundled Monado sources aligned with release 26.9
+        # until the pinned nixpkgs branch provides a compatible package.
         (
           final: prev:
           let

@@ -225,7 +225,7 @@ in
   ];
 
   #
-  # GNOME / GTK support
+  # GTK application support
   #
   programs.dconf.enable = true;
 
@@ -246,7 +246,7 @@ in
       wlrobs
       obs-backgroundremoval
       obs-pipewire-audio-capture
-      obs-vaapi #optional AMD hardware acceleration
+      obs-vaapi
       obs-gstreamer
       obs-vkcapture
     ];
