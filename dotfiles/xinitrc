@@ -12,9 +12,6 @@ xidlehook --not-when-fullscreen --not-when-audio --timer 900 'slock' '' &
 dunst -b &
 wmname LG3D  &
 
-# Syncthing is managed by the system service.
-# syncthing --no-browser &
-
 xset r rate 200 60 &
 setxkbmap us altgr-intl &
 
@@ -29,8 +26,6 @@ xrandr --auto
 # services.autorandr handles the initial layout and subsequent DRM hotplug
 # events.  Its profiles are declared in hosts/p52/desktop.nix.
 autorandr --change --default default >/dev/null 2>&1 || true
-#xrandr --dpi 142
-
 
 wal -R >/dev/null 2>&1 &
 if [[ -f ~/.cache/wal/Colors.hs ]]; then
@@ -41,14 +36,8 @@ xsettingsd &
 picom &
 redshift -l 25.686613:-100.316116 &
 
-# if [ -x /usr/bin/gpg-agent ]; then
-#  eval "$(/usr/bin/gpg-agent --daemon)"
-# fi
-
 [[ -f ~/.Xresources ]] && xrdb -merge ~/.Xresources
 
-#[ ! -s ~/.config/mpd/pid ] && mpd &
-
-polkit-gnome-authentication-agent-1 &
+"$HOME/.local/bin/polkit-agent" &
 
 exec dbus-run-session xmonad

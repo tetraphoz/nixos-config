@@ -1,9 +1,4 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
 
 {
   # Firmware updates
@@ -12,9 +7,8 @@
   # Printing
   services.printing.enable = true;
 
-  # Sunshine exposes the active X11 desktop to Moonlight clients.  It runs as
-  # the logged-in user through the graphical-session target, so it can access
-  # this host's display and audio session without a separate service account.
+  # Run Sunshine as the logged-in user in the graphical session so it can
+  # capture the active desktop and use that session's audio devices.
   services.sunshine = {
     enable = true;
     # Sunshine ports are allowed only on tailscale0 in networking.nix.
@@ -85,8 +79,18 @@
   # the actual Nix store paths.
   systemd.services.open-fprintd-suspend = {
     description = "Reset fingerprint backend before suspend";
-    before = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target" ];
-    wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target" ];
+    before = [
+      "suspend.target"
+      "hibernate.target"
+      "hybrid-sleep.target"
+      "suspend-then-hibernate.target"
+    ];
+    wantedBy = [
+      "suspend.target"
+      "hibernate.target"
+      "hybrid-sleep.target"
+      "suspend-then-hibernate.target"
+    ];
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${pkgs.open-fprintd-p52}/lib/open-fprintd/suspend.py";
@@ -95,8 +99,18 @@
 
   systemd.services.open-fprintd-resume = {
     description = "Restart fingerprint backend after resume";
-    after = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target" ];
-    wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target" ];
+    after = [
+      "suspend.target"
+      "hibernate.target"
+      "hybrid-sleep.target"
+      "suspend-then-hibernate.target"
+    ];
+    wantedBy = [
+      "suspend.target"
+      "hibernate.target"
+      "hybrid-sleep.target"
+      "suspend-then-hibernate.target"
+    ];
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${pkgs.open-fprintd-p52}/lib/open-fprintd/resume.py";
@@ -107,13 +121,11 @@
   # module talks to open-fprintd through the same fprintd DBus API.
   security.pam.services = {
     login.fprintAuth = true;
-    # Make Ly fingerprint-only: do not keep the normal password fallback in
-    # the display-manager PAM stack.  Password authentication remains enabled
-    # for TTY login, sudo, and the other PAM services below.
+    # Keep Ly password-based until fingerprint enrollment and login have been
+    # verified. A failed/missing reader must not lock out the graphical login.
     ly = {
-      fprintAuth = true;
-      # Ly's module enables unixAuth by default, so explicitly override it.
-      unixAuth = lib.mkForce false;
+      fprintAuth = false;
+      unixAuth = true;
     };
     sudo.fprintAuth = true;
     "polkit-1".fprintAuth = true;
@@ -218,7 +230,7 @@
 
     user = "tetra";
 
-    #TODO: update file locations
+    # Keep synchronized data on the dedicated media filesystem.
     dataDir = "/media/syncthing/";
 
     configDir = "/home/tetra/.config/syncthing";

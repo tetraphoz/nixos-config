@@ -51,8 +51,8 @@ value passed only through `set-mouse-color`."
 
 ;; Theme / fonts / global variables
 (setq doom-theme 'ef-dream
-      doom-font (font-spec :family "Cozette" :size 12)
-      doom-variable-pitch-font (font-spec :family "IBM Plex Serif" :weight 'normal)
+      doom-font (font-spec :family "IBM Plex Mono" :size 15)
+      doom-variable-pitch-font (font-spec :family "IBM Plex Sans" :size 15 :weight 'normal)
       display-line-numbers-type t
       browse-url-firefox-program "librewolf"
       user-full-name "tetraphz"

@@ -12,6 +12,24 @@
     "${config.home.homeDirectory}/.local/bin"
   ];
 
+  # polkit-gnome installs its agent under libexec rather than bin. Expose a
+  # stable per-user command for both XMonad and Hyprland session startup.
+  home.file.".local/bin/polkit-agent" = {
+    executable = true;
+    text = ''
+      #!/usr/bin/env bash
+      exec ${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1 "$@"
+    '';
+  };
+
+  home.pointerCursor = {
+    gtk.enable = true;
+    x11.enable = true;
+    package = pkgs.bibata-cursors;
+    name = "Bibata-Modern-Classic";
+    size = 24;
+  };
+
   home.sessionVariables = {
     BROWSER = "librewolf";
     EDITOR = "emacsclient";
@@ -59,8 +77,6 @@
     yazi
     sxiv
 
-    # Development
-
     # Editors
 
     emacs
@@ -104,8 +120,6 @@
     tcpdump
     qbittorrent
     simplex-chat-desktop
-
-    # Sync
 
     # SDR
 
@@ -227,9 +241,9 @@
     enable = true;
     package = pkgs.emacs;
 
-    # Ly starts X after the user manager is already up.  Starting the PGTK
-    # daemon from default.target makes Emacs initialize without a window
-    # system, so emacsclient cannot create X11 frames later.
+    # Start the PGTK daemon with the graphical session so it inherits the
+    # display environment; a headless daemon from default.target cannot create
+    # graphical frames later through emacsclient.
     startWithUserSession = "graphical";
   };
 
@@ -268,15 +282,11 @@
 
   home.file.".doom.d".source = ../dotfiles/doom.d;
 
-  #home.file.".emacs.d".source =
-  #  ../dotfiles/.emacs.d;
-
   xdg.configFile."kitty".source = ../dotfiles/kitty;
 
-  # Thunar uses exo-open for its "Open Terminal Here" action.  exo first
-  # consults this file and expects the executable name (not a desktop-file
-  # ID), so this keeps that action on the same Kitty terminal used by XMonad.
-  # exo launches it with Thunar's current directory as its working directory.
+  # Thunar's "Open Terminal Here" action reads this exo helper file and expects
+  # an executable name, not a desktop-file ID. exo passes Thunar's current
+  # directory to the selected terminal.
   xdg.configFile."xfce4/helpers.rc".text = ''
     TerminalEmulator=kitty
   '';
@@ -350,15 +360,23 @@
       fi
     fi
 
+    if [ -f "$ROFIPASS_DIR/src/rofipass" ]; then
+      # Remove the fixed upstream width so the Rasi theme controls geometry,
+      # and match rofipass's markup colors to the desktop palette.
+      ${pkgs.gnused}/bin/sed -i \
+        -e 's/ -width 1000//g' \
+        -e 's/help_color="#7c5cff"/help_color="#FFB36B"/' \
+        -e 's/div_color="#334433"/div_color="#76616F"/' \
+        -e 's/label="#f067fc"/label="#FFE7C2"/' \
+        "$ROFIPASS_DIR/src/rofipass"
+    fi
+
     if [ -x "$ROFIPASS_DIR/src/rofipass" ]; then
       mkdir -p "$(dirname "$ROFIPASS_BIN")"
       chmod 700 "$ROFIPASS_DIR/src/rofipass"
       ln -sfn "$ROFIPASS_DIR/src/rofipass" "$ROFIPASS_BIN"
     fi
   '';
-
-  # xdg.configFile."wal".source =
-  #   ../dotfiles/wal;
 
   home.stateVersion = "26.05";
 }

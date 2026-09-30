@@ -1,14 +1,92 @@
-/*-*- mode: css; -*-*/
+/* Shared Rofi theme; colors are regenerated alongside each wallpaper by pywal. */
 configuration {
-    show-icons:        true;
-    icon-theme:        "Numix";
-    font:              "Cozette 12";
-    cycle:             true;
-    /* hide-scrollbar: true; */
-    disable-history:   false;
-    modi:              "run";
-    display-drun:      "apps";
-    //theme:           "gruvbox-dark-soft";
-    column:            2;
+    font: "IBM Plex Sans 14";
+    show-icons: false;
+    cycle: true;
+    disable-history: false;
+    modi: "drun";
+    display-drun: "Apps";
+    drun-display-format: "{name}";
+    columns: 1;
 }
+
 @import "~/.cache/wal/colors-rofi-dark.rasi"
+
+* {
+    background-color: @background;
+    text-color: @foreground;
+    spacing: 8px;
+}
+
+window {
+    width: 42%;
+    location: center;
+    border: 1px;
+    border-color: @selected-normal-background;
+    border-radius: 14px;
+    background-color: @background;
+    padding: 16px;
+}
+
+mainbox {
+    background-color: transparent;
+    children: [ inputbar, message, listview ];
+    spacing: 10px;
+}
+
+inputbar {
+    background-color: @alternate-normal-background;
+    border: 1px;
+    border-color: @selected-normal-background;
+    border-radius: 10px;
+    padding: 10px 12px;
+    children: [ prompt, entry ];
+    spacing: 10px;
+}
+
+prompt {
+    text-color: @selected-normal-background;
+}
+
+entry {
+    text-color: @foreground;
+    placeholder: "Search passwords…";
+    placeholder-color: @normal-foreground;
+}
+
+message {
+    background-color: @background;
+    border: 0px;
+    padding: 4px 2px;
+}
+
+textbox {
+    text-color: @normal-foreground;
+}
+
+listview {
+    columns: 1;
+    lines: 9;
+    fixed-height: false;
+    scrollbar: true;
+    spacing: 4px;
+    background-color: transparent;
+}
+
+element {
+    padding: 9px 11px;
+    border-radius: 8px;
+    background-color: transparent;
+    text-color: @normal-foreground;
+}
+
+element selected {
+    background-color: @selected-normal-background;
+    text-color: @selected-normal-foreground;
+}
+
+scrollbar {
+    width: 4px;
+    background-color: transparent;
+    handle-color: @selected-normal-background;
+}

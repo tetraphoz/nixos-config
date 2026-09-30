@@ -15,18 +15,18 @@
 
   home.file.".xinitrc".source = ../dotfiles/xinitrc;
 
-  # Ly launches the X session through .xsession instead of startx/.xinitrc.
+  # Ly runs ~/.xsession; keep ~/.xinitrc available for manual startx sessions.
   home.file.".xsession" = {
     source = ../dotfiles/xinitrc;
     executable = true;
   };
 
-  # Keep the legacy default path in sync too. Xmobar without an explicit
-  # config path reads ~/.xmobarrc.
+  # Xmobar reads ~/.xmobarrc when launched without --config; XMonad uses the
+  # XDG path configured in dotfiles/xmonad/xmonad.hs.
   home.file.".xmobarrc".source = ../dotfiles/xmobarrc;
 
-  # Keep the generated XMonad build directory writable so xmonad --recompile
-  # can write its build output outside the read-only Nix store.
+  # Link the config file into the home directory rather than making the whole
+  # XMonad config tree a store symlink; recompilation writes build files there.
   home.file.".xmonad/xmonad.hs".source = ../dotfiles/xmonad/xmonad.hs;
 
   home.activation.linkWalColors = config.lib.dag.entryAfter [ "writeBoundary" ] ''

@@ -1,1 +1,4 @@
-rofi.theme: ~/.cache/wal/colors-rofi-dark.rasi
+! Compatibility settings for older Rofi builds; Rofi 2 uses config.rasi.
+rofi.theme: ~/.config/rofi/config.rasi
+rofi.font: IBM Plex Sans 14
+rofi.show-icons: false

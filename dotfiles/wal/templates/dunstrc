@@ -13,13 +13,11 @@
     # Add vertical padding to the inside of the notification
     padding = 5
 
-    browser = /usr/bin/firefox -new-tab
+    browser = librewolf -new-tab
 
     icon_position = left
 
     max_icon_size = 32
-
-    icon_path = /usr/share/icons/Numix/16@2x/status/:/usr/share/icons/Numix/16@2x/devices/
 
     # Add horizontal padding for when the text gets long enough
     horizontal_padding = 5
@@ -32,7 +30,7 @@
     idle_threshold = 170
 
     # Font and typography settings
-    font = Cozette 12
+    font = IBM Plex Sans 12
     alignment = center
     word_wrap = yes
 
