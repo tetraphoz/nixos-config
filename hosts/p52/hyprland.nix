@@ -1,8 +1,8 @@
 { ... }:
 
 {
-  # Keep XMonad as the default Ly session; Hyprland is an optional Wayland
-  # session for testing the WayVR/WiVRn desktop path.
+  # XMonad remains the default Ly session; Hyprland is available as an
+  # optional Wayland desktop for WiVRn and WayVR.
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;

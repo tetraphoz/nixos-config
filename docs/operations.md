@@ -32,13 +32,52 @@ are enabled on this host.
 
 ## Desktop sessions
 
-XMonad is the default Ly session. Select **Hyprland** in Ly to test the
-optional Wayland session and the WiVRn/WayVR desktop path. Its user
+XMonad is the default Ly session. Select **Hyprland** in Ly for the optional
+Wayland desktop and the WiVRn/WayVR path. Its user
 configuration is managed alongside the XMonad config by Home Manager. Use
-`nwg-displays` to arrange monitors and select modes; it saves settings to
-`~/.config/hypr/monitors.conf`. Waybar is positioned at the bottom. The Hyprland
-profile mirrors the main XMonad shortcuts; `Super+Q` reloads Hyprland,
-`Super+Shift+Q` exits, and `Super+Shift+C` closes a window.
+`nwg-displays` to arrange physical monitors and select modes; it saves settings
+to `~/.config/hypr/monitors.conf`. Hyprland has a generic preferred-mode
+fallback, and workspace rules are not tied to connector names, so the same
+session works on the laptop panel alone, with the dock/projector, or with
+runtime headless outputs. Hyprland workspace IDs remain globally unique;
+`Super+Left/Right` cycles workspaces on the focused output, the number row
+selects local workspace slots, and `Super+N` creates a new workspace there.
+Waybar shows each output's own workspace list. `Super+W` / `Super+Shift+W`
+cycles output focus; Super+Ctrl+W moves the active window to the next output, with
+spatial `Super+Alt+Arrow` alternatives. Waybar is positioned at the bottom.
+The Hyprland profile mirrors the main XMonad shortcuts; `Super+Q` reloads Hyprland,
+`Super+Shift+Q` exits, and `Super+Shift+C` closes a window. `Super+Backspace`
+toggles the terminal scratchpad, `Super+Shift+Y` toggles the ncmpcpp scratchpad,
+and `Super+Tab` opens Pyprland's expose overview. `Super+Alt+C` picks a color
+with hyprpicker; Print saves a region screenshot and Ctrl+Print copies OCR text.
+Hyprsunset applies its configured warm-color profile after 20:30 local time
+and restores neutral color at 07:30. Hardware volume, mic-mute, and brightness
+keys use SwayOSD to show their changes. Graphical authentication prompts use
+the shared Polkit agent in either session.
+
+### Quest 3 virtual outputs
+
+Breezy Desktop is designed for KDE Plasma/GNOME and supported XR glasses; its
+maintainer has said Quest 3 is not currently supported. The Quest setup uses
+WiVRn with WayVR instead. WayVR captures desktop screens for VR but does not
+create Hyprland outputs. Create headless outputs before starting/restarting
+WayVR, then select the desired screens in the portal:
+
+```sh
+hypr-virtual-output list
+hypr-virtual-output add VR-1 1920x1080@60 1
+hypr-virtual-output add VR-2 2560x1440@60 1
+hypr-virtual-output remove VR-2
+```
+
+The helper manages only runtime `VR-*` headless outputs; it does not persist
+them or alter the real monitor layout. Removing an output with open workspace
+windows migrates those windows to remaining outputs; the helper warns and asks
+for confirmation. Move important windows first if you need precise placement.
+Start with one 1080p output, then test additional outputs and modes for capture
+latency, GPU load, and Quest streaming quality. WayVR may need its PipeWire
+screen tokens cleared and the software restarted after changing which screens
+it captures.
 
 In the X11 session, the idle-lock timer locks after 15 minutes unless a
 fullscreen application or audio playback is active. The separate logind lock
@@ -119,8 +158,13 @@ journalctl -u open-fprintd -u python3-validity -b
 journalctl -k -b | grep -iE 'usb|fprint|validity|synaptics'
 ```
 
-Ly is configured for fingerprint-only authentication. Keep a working TTY or
-other recovery route available when changing the fingerprint/PAM setup.
+Ly currently uses password authentication; fingerprint authentication remains
+enabled for TTY login, sudo, and polkit. This keeps initial graphical login
+available even if the fingerprint reader is not enrolled or its backend is
+unavailable. Check the generated Ly auth stack with `grep '^auth ' /etc/pam.d/ly`;
+it should include `pam_unix.so` and omit `pam_fprintd.so`. If Ly fingerprint
+login is enabled later, retain password (`unixAuth`) authentication as a
+fallback.
 
 ### Media-dependent services
 

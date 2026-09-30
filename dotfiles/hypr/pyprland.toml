@@ -1,0 +1,16 @@
+[pyprland]
+plugins = ["scratchpads", "expose"]
+
+[scratchpads.terminal]
+command = "kitty --class scratch"
+class = "scratch"
+size = "70% 65%"
+animation = "fromTop"
+lazy = true
+
+[scratchpads.ncmpcpp]
+command = "kitty --class scratchNcm -e ncmpcpp"
+class = "scratchNcm"
+size = "80% 80%"
+animation = "fromTop"
+lazy = true

@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat >&2 <<'EOF'
+Usage:
+  hypr-virtual-output list
+  hypr-virtual-output add VR-NAME [WIDTHxHEIGHT@HZ] [SCALE]
+  hypr-virtual-output remove VR-NAME
+
+Example:
+  hypr-virtual-output add VR-1 1920x1080@60 1
+  hypr-virtual-output remove VR-1
+
+The helper only manages user-created headless outputs named VR-*.
+EOF
+  exit 2
+}
+
+valid_name() {
+  [[ $1 =~ ^VR-[A-Za-z0-9._-]+$ ]]
+}
+
+case ${1:-} in
+  list)
+    [[ $# -eq 1 ]] || usage
+    hyprctl monitors -j | jq -r '.[] | [.name, "\(.width)x\(.height)@\(.refreshRate)", (if .focused then "focused" else "" end)] | @tsv'
+    ;;
+
+  add)
+    [[ $# -ge 2 && $# -le 4 ]] || usage
+    name=$2
+    mode=${3:-1920x1080@60}
+    scale=${4:-1}
+    valid_name "$name" || { echo "Output name must start with VR- and contain only letters, digits, dot, underscore, or hyphen." >&2; exit 2; }
+    [[ $mode =~ ^[1-9][0-9]*x[1-9][0-9]*(@[0-9]+([.][0-9]+)?)?$ ]] || { echo "Invalid mode: $mode (expected WIDTHxHEIGHT@HZ)." >&2; exit 2; }
+    if [[ ! $scale =~ ^[0-9]+([.][0-9]+)?$ ]] || ! jq -en --argjson scale "$scale" '$scale > 0' >/dev/null; then
+      echo "Invalid scale: $scale (must be greater than zero)." >&2
+      exit 2
+    fi
+
+    if hyprctl monitors all -j | jq -e --arg name "$name" 'any(.[]; .name == $name)' >/dev/null; then
+      echo "An output named $name already exists." >&2
+      exit 1
+    fi
+
+    hyprctl output create headless "$name"
+    ready=false
+    for _ in {1..50}; do
+      if hyprctl monitors -j | jq -e --arg name "$name" 'any(.[]; .name == $name)' >/dev/null; then
+        ready=true
+        break
+      fi
+      sleep 0.1
+    done
+    if [[ $ready != true ]]; then
+      echo "Hyprland did not expose the new output $name within five seconds." >&2
+      exit 1
+    fi
+
+    # The generic monitor fallback makes the new output usable immediately;
+    # this runtime rule applies the requested mode and scale to this output.
+    hyprctl keyword monitor "$name,$mode,auto,$scale"
+    printf 'Created %s at %s (scale %s). Start or restart WayVR to share it.\n' "$name" "$mode" "$scale"
+    ;;
+
+  remove)
+    [[ $# -eq 2 ]] || usage
+    name=$2
+    valid_name "$name" || { echo "Only user-created VR-* outputs can be removed with this helper." >&2; exit 2; }
+    occupied=$(hyprctl workspaces -j | jq -r --arg name "$name" '.[] | select(.monitor == $name and (.windows // 0) > 0) | "\(.name // .id) (\(.windows) windows)"')
+    if [[ -n $occupied ]]; then
+      printf 'Removing %s will move these workspace windows to another output:\n%s\n' "$name" "$occupied" >&2
+      read -r -p 'Type "remove" to continue: ' confirmation
+      [[ $confirmation == remove ]] || { echo "Cancelled." >&2; exit 1; }
+    fi
+    hyprctl output destroy "$name"
+    ;;
+
+  *)
+    usage
+    ;;
+esac

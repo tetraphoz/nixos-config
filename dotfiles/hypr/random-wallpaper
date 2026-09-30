@@ -15,6 +15,12 @@ fi
 wallpaper="${wallpapers[RANDOM % ${#wallpapers[@]}]}"
 for _ in {1..30}; do
   if hyprctl hyprpaper wallpaper ",$wallpaper" >/dev/null 2>&1; then
+    # Generate the shared Kitty, Rofi, Dunst, and Waybar palette from this
+    # wallpaper. Keep the wallpaper change successful if pywal cannot run.
+    if command -v wal >/dev/null 2>&1 && wal -i "$wallpaper" -n >/dev/null 2>&1; then
+      pkill -USR2 waybar 2>/dev/null || true
+      dunstctl reload >/dev/null 2>&1 || true
+    fi
     exit 0
   fi
   sleep 0.2

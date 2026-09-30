@@ -18,8 +18,30 @@ case "${1:-}" in
     ;;
 esac
 
-if ! hyprctl clients -j | jq -e --arg class "$class" 'any(.[]; .class == $class)' >/dev/null; then
+has_client() {
+  hyprctl clients -j \
+    | jq -e --arg class "$class" 'any(.[]; .mapped and .class == $class)' \
+      >/dev/null
+}
+
+if ! has_client; then
   "${command[@]}" >/dev/null 2>&1 &
+
+  # Wait for the class rule to place the new window before showing its special
+  # workspace; otherwise the toggle can race Kitty's startup and leave it hidden.
+  found=false
+  for _ in {1..50}; do
+    if has_client; then
+      found=true
+      break
+    fi
+    sleep 0.1
+  done
+
+  if [[ "$found" != true ]]; then
+    echo "timed out waiting for the $class scratchpad window" >&2
+    exit 1
+  fi
 fi
 
 hyprctl dispatch togglespecialworkspace "$workspace"

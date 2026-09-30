@@ -1,30 +1,101 @@
 {
   "layer": "top",
   "position": "bottom",
-  "height": 32,
-  "spacing": 4,
-  "modules-left": ["hyprland/workspaces"],
-  "modules-center": ["hyprland/window"],
-  "modules-right": ["cpu", "memory", "network", "pulseaudio", "battery", "clock", "tray"],
-  "cpu": {
-    "format": "CPU {usage}%"
+  "height": 36,
+  "spacing": 0,
+  "modules-left": [
+    "hyprland/workspaces",
+    "hyprland/window"
+  ],
+  "modules-center": [
+    "clock"
+  ],
+  "modules-right": [
+    "mpris",
+    "backlight",
+    "cpu",
+    "memory",
+    "temperature",
+    "network",
+    "pulseaudio",
+    "battery",
+    "tray"
+  ],
+  "hyprland/workspaces": {
+    "disable-scroll": true,
+    "all-outputs": false,
+    "format": "{name}"
   },
-  "memory": {
-    "format": "RAM {}%"
-  },
-  "network": {
-    "format-wifi": "{essid} {signalStrength}%",
-    "format-ethernet": "{ipaddr}",
-    "format-disconnected": "Offline"
-  },
-  "pulseaudio": {
-    "format": "Audio {volume}%",
-    "format-muted": "Audio muted"
-  },
-  "battery": {
-    "format": "Battery {capacity}%"
+  "hyprland/window": {
+    "max-length": 48,
+    "separate-outputs": true
   },
   "clock": {
-    "format": "{:%a %d %b  %H:%M}"
+    "format": "  {:%a %d %b  %H:%M}",
+    "tooltip-format": "{:%A, %d %B %Y\\n%H:%M:%S}",
+    "interval": 30
+  },
+  "mpris": {
+    "format": "{player_icon}  {artist} — {title}",
+    "format-paused": "{player_icon}  {artist} — {title}",
+    "player-icons": {
+      "default": "♫",
+      "spotify": "",
+      "mpv": ""
+    },
+    "max-length": 36,
+    "tooltip-format": "{player} · {artist} — {title}",
+    "on-click": "playerctl play-pause",
+    "on-click-right": "playerctl next",
+    "on-click-middle": "playerctl previous"
+  },
+  "backlight": {
+    "format": "☼  {percent}%",
+    "tooltip-format": "Display brightness: {percent}%",
+    "on-scroll-up": "brightnessctl set +5%",
+    "on-scroll-down": "brightnessctl set 5%-"
+  },
+  "cpu": {
+    "interval": 5,
+    "format": "  {usage}%",
+    "tooltip": true
+  },
+  "memory": {
+    "interval": 10,
+    "format": "  {}%",
+    "tooltip-format": "Memory: {used:0.1f} GiB / {total:0.1f} GiB"
+  },
+  "temperature": {
+    "thermal-zone": 0,
+    "critical-threshold": 85,
+    "interval": 5,
+    "format": "  {temperatureC}°",
+    "format-critical": "  {temperatureC}°",
+    "tooltip-format": "CPU temperature: {temperatureC}°C"
+  },
+  "network": {
+    "interval": 5,
+    "format-wifi": "  {signalStrength}%",
+    "format-ethernet": "  {ipaddr}",
+    "format-disconnected": "  Offline",
+    "tooltip-format": "{ifname}: {ipaddr}/{cidr} · {essid} ({signalStrength}%)"
+  },
+  "pulseaudio": {
+    "format": "  {volume}%",
+    "format-muted": "  Muted",
+    "scroll-step": 5,
+    "on-click": "wpctl set-mute @DEFAULT_SINK@ toggle",
+    "on-click-right": "pavucontrol"
+  },
+  "battery": {
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{icon}  {capacity}%",
+    "format-charging": "  {capacity}%",
+    "format-plugged": "  {capacity}%",
+    "format-icons": ["", "", "", "", ""],
+    "tooltip-format": "Battery: {capacity}% · {time} remaining"
   }
 }

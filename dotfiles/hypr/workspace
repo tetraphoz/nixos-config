@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  printf 'Usage: hypr-workspace {new|move-new}\n' >&2
+  exit 2
+}
+
+[[ $# -eq 1 ]] || usage
+action=$1
+case "$action" in
+  new|move-new) ;;
+  *) usage ;;
+esac
+
+# Workspace IDs are global in Hyprland. Allocate above the current maximum so
+# the new workspace appends to the local number-row order. A workspace created
+# by dispatch is attached to whichever monitor currently has focus.
+workspaces=$(hyprctl workspaces -j)
+max_id=$(jq -r '[.[] | select(.id > 0) | .id] | max // 0' <<<"$workspaces")
+next_id=$((max_id + 1))
+
+if [[ $action == move-new ]]; then
+  hyprctl dispatch movetoworkspace "$next_id"
+fi
+hyprctl dispatch workspace "$next_id"

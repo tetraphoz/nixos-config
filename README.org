@@ -23,9 +23,14 @@ It’s set up for a desktop-focused workflow using *Doom Emacs* and *XMonad*, wi
 │   │   └── packages.el
 │   ├── dunst
 │   ├── hypr
+│   │   ├── PROGRESS.md
+│   │   ├── README.md
 │   │   ├── hyprland.conf
+│   │   ├── hyprsunset.conf
+│   │   ├── pyprland.toml
 │   │   ├── random-wallpaper
 │   │   ├── scratchpad
+│   │   ├── screenshot
 │   │   ├── toggle-border
 │   │   └── window-picker
 │   ├── kitty
@@ -87,10 +92,15 @@ This repo includes configs for:
 - *MPD*
 - *ncmpcpp*
 
-XMonad remains the default Ly session. Hyprland can be selected at Ly when
-using the WayVR/WiVRn desktop path. In the X11 session, the idle-lock timer
-waits 15 minutes and is suppressed while a fullscreen application or audio
-playback is active.
+XMonad remains the default Ly session. Hyprland can be selected at Ly for the
+WiVRn/WayVR Quest 3 path. Its workspaces and monitor bindings are output-
+agnostic; `hypr-virtual-output` can create runtime headless screens for WayVR,
+while `nwg-displays` manages physical monitor modes. Pyprland adds IPC-based
+scratchpads and an expose overview; hyprsunset supplies its evening color
+filter, hyprpicker copies colors to the clipboard, and SwayOSD shows
+hardware-control feedback. In the X11 session, the idle-lock
+timer waits 15 minutes and is suppressed while a fullscreen application or
+audio playback is active.
 
 *** Fingerprint Authentication
 The ThinkPad P52 exposes a Synaptics Metallica MIS reader with USB ID
@@ -127,10 +137,13 @@ journalctl -u open-fprintd -u python3-validity -b
 journalctl -k -b | grep -iE 'usb|fprint|validity|synaptics'
 #+end_src
 
-Suspend/resume units are enabled by the NixOS module. Password authentication
-remains available for TTY login, sudo, and other configured PAM services; Ly
-itself is configured for fingerprint-only login. The fingerprint database is
-managed by the backend; do not copy it between machines.
+Suspend/resume units are enabled by the NixOS module. Ly currently uses
+password authentication so a missing or unenrolled reader cannot block the
+first graphical login. Fingerprint authentication remains enabled for the TTY
+`login` PAM service, sudo, and polkit. After enrolling and verifying a
+fingerprint, Ly can optionally enable `fprintAuth` while retaining
+`unixAuth = true` as a password fallback. The fingerprint database is managed
+by the backend; do not copy it between machines.
 
 *** Pywal Integration
 Some files are linked to Pywal-generated cache files, for example:
@@ -171,7 +184,7 @@ Both the integrated and standalone configurations include the XMonad and
 Hyprland modules and package sets.
 
 *** Remote desktop and private networking
-Sunshine is enabled as a Moonlight host for the active X11 session. Its
+Sunshine is enabled as a Moonlight host for the active graphical session. Its
 streaming and web UI ports are allowed only on the Tailscale interface, not
 on LAN or public interfaces. After switching, authenticate Tailscale, then
 open Sunshine's web UI through the tailnet to create credentials and pair a

@@ -16,9 +16,9 @@ The flake overlays contain three machine/workflow-specific package adjustments:
 - `python-validity` and `open-fprintd-p52` provide the Validity fingerprint
   sensor backend and fix NixOS-incompatible service paths.
 - WiVRn is built from the `26.9` upstream release with its matching patched
-  Monado source, rather than the version currently used by the pinned Nixpkgs.
-- REAPER is pinned to the upstream `7.80` Linux x86_64 archive because the
-  pinned Nixpkgs release contains `7.73`.
+  Monado source, rather than the WiVRn version selected by pinned Nixpkgs.
+- REAPER uses the upstream `7.80` Linux x86_64 archive instead of the version
+  packaged by pinned Nixpkgs.
 
 These overrides have fixed source revisions and hashes. Revisit them when
 updating Nixpkgs or when the fixes/releases are available upstream. The REAPER
@@ -55,11 +55,21 @@ this host.
 
 The Hyprland profile installs Waybar, Wofi, `nwg-displays`, and Wayland
 utilities, and links `dotfiles/hypr/hyprland.conf`. Waybar's configuration is
-in `dotfiles/waybar/config`; its bar is at the bottom of the screen.
-Hyprland sources the mutable `~/.config/hypr/monitors.conf` created and
-updated by `nwg-displays`; Home Manager seeds it with the preferred
-external-monitor mode on first activation. XMonad remains the default login
-session. Application configurations are under `dotfiles/`.
+in `dotfiles/waybar/config`; its bar is at the bottom of the screen. Pyprland
+provides IPC-based scratchpads and an expose overview; hyprsunset applies a
+local-time color-temperature schedule, and hyprpicker copies selected colors
+to the clipboard. Hyprland sources the mutable `~/.config/hypr/monitors.conf`
+created and updated by `nwg-displays`; a generic preferred-mode fallback
+supports additional physical or headless outputs. Workspace configuration is
+monitor-agnostic: IDs are allocated globally, while cycling, number-row slots,
+and Waybar are scoped to the focused/current output. `hypr-virtual-output`
+creates and removes runtime headless outputs for the Quest 3/WayVR path. Breezy
+Desktop was researched but is not used: its desktop integration targets KDE
+Plasma/GNOME and supported XR glasses, and its maintainer has said Quest 3 is
+not currently supported. SwayOSD displays feedback for Hyprland's hardware
+volume, mic mute, and brightness bindings. Home Manager also launches a shared
+Polkit authentication agent in both graphical sessions. XMonad remains the
+default login session. Application configurations are under `dotfiles/`.
 
 ## Hardware and storage notes
 
@@ -93,8 +103,8 @@ and DSSI search paths.
 - TCP port `45013` is allowed through the host firewall for SimpleX.
 - Sunshine's streaming ports are allowed on `tailscale0`, not generally on
   LAN/public interfaces. Tailscale must be authenticated after initial setup.
-- The Ly PAM stack is configured for fingerprint-only login. Password login
-  remains available through other configured PAM services such as TTY login
-  and sudo. The fingerprint backend is a custom Validity stack rather than the
-  stock `libfprint` driver.
+- Ly uses password authentication so an unenrolled/unavailable fingerprint
+  reader cannot prevent the first graphical login. Fingerprint authentication
+  remains enabled for TTY login, sudo, and polkit. The backend is a custom
+  Validity stack rather than the stock `libfprint` driver.
 - Membership in the `docker` group grants root-equivalent access to the host.
