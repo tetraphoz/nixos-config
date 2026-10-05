@@ -173,6 +173,7 @@
 
             home-manager.users.tetra = {
               imports = [
+                pi.homeModules.default
                 ./home/tetra.nix
                 ./home/xmonad.nix
                 ./home/hyprland.nix
@@ -190,6 +191,7 @@
       homeConfigurations.tetra = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         modules = [
+          pi.homeModules.default
           ./home/tetra.nix
           ./home/xmonad.nix
           ./home/hyprland.nix

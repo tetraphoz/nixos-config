@@ -4,6 +4,9 @@
   ...
 }:
 
+let
+  piSubagentExample = "${pkgs.pi-coding-agent}/lib/node_modules/@earendil-works/pi-coding-agent/examples/extensions/subagent";
+in
 {
   home.username = "tetra";
   home.homeDirectory = "/home/tetra";
@@ -207,33 +210,21 @@
 
   programs.home-manager.enable = true;
 
-  # Pi keeps its settings outside XDG_CONFIG_HOME.  Update only the model
-  # preference so Pi can still manage the rest of this mutable settings file.
-  home.activation.configurePi = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    PI_SETTINGS="$HOME/.pi/agent/settings.json"
-    mkdir -p "$(dirname "$PI_SETTINGS")"
-
-    if [ -f "$PI_SETTINGS" ]; then
-      tmp="$(mktemp)"
-      if ${pkgs.jq}/bin/jq \
-        '.defaultProvider = "openai" | .defaultModel = "gpt-6-luna"' \
-        "$PI_SETTINGS" > "$tmp"; then
-        chmod --reference="$PI_SETTINGS" "$tmp" 2>/dev/null || true
-        if ! cmp -s "$tmp" "$PI_SETTINGS"; then
-          mv "$tmp" "$PI_SETTINGS"
-        else
-          rm -f "$tmp"
-        fi
-      else
-        rm -f "$tmp"
-        echo "warning: could not update Pi settings; leaving them unchanged" >&2
-      fi
-    else
-      printf '%s\\n' \
-        '{"defaultProvider":"openai","defaultModel":"gpt-6-luna"}' \
-        > "$PI_SETTINGS"
-    fi
-  '';
+  # Pi's Home Manager module wraps the CLI with declarative resource paths and
+  # merges these defaults into settings.json at launch.
+  programs.pi.coding-agent = {
+    enable = true;
+    settings = {
+      defaultProvider = "openai";
+      defaultModel = "gpt-6-luna";
+    };
+    extensions = [
+      piSubagentExample
+      ../dotfiles/pi/extensions
+    ];
+    skills = [ ../dotfiles/pi/skills ];
+    promptTemplates = [ ../dotfiles/pi/prompts ];
+  };
 
   # Run the Doom-managed Emacs daemon as the user, so emacsclient can reach
   # the same configuration and authentication agent as the desktop session.
@@ -279,6 +270,10 @@
 
   # Do not start MPD before the separate media filesystem is available.
   systemd.user.services.mpd.Unit.RequiresMountsFor = [ "/media/music" ];
+
+  # pi.nix does not currently expose agent definitions as an option; manage
+  # them in dotfiles and place them at Pi's conventional discovery location.
+  home.file.".pi/agent/agents".source = ../dotfiles/pi/agents;
 
   home.file.".doom.d".source = ../dotfiles/doom.d;
 
