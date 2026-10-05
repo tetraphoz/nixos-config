@@ -25,6 +25,19 @@ let
     in
     map (name: piExtensionsDir + "/${name}") (builtins.filter isExtension (builtins.attrNames entries));
 
+  piPromptDir = ../dotfiles/pi/prompts;
+  piLocalPromptTemplates =
+    let
+      entries = builtins.readDir piPromptDir;
+      isPrompt =
+        name:
+        let
+          kind = entries.${name};
+        in
+        (kind == "regular" || kind == "symlink") && lib.hasSuffix ".md" name;
+    in
+    map (name: piPromptDir + "/${name}") (builtins.filter isPrompt (builtins.attrNames entries));
+
   piSubagentExample = "${pkgs.pi-coding-agent}/lib/node_modules/@earendil-works/pi-coding-agent/examples/extensions/subagent";
 in
 {
@@ -240,7 +253,7 @@ in
     };
     extensions = [ piSubagentExample ] ++ piLocalExtensions;
     skills = [ ../dotfiles/pi/skills ];
-    promptTemplates = [ ../dotfiles/pi/prompts ];
+    promptTemplates = piLocalPromptTemplates;
   };
 
   # Run the Doom-managed Emacs daemon as the user, so emacsclient can reach
