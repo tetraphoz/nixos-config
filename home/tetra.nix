@@ -1,10 +1,30 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }:
 
 let
+  piExtensionsDir = ../dotfiles/pi/extensions;
+  piLocalExtensions =
+    let
+      entries = builtins.readDir piExtensionsDir;
+      isExtension =
+        name:
+        let
+          kind = entries.${name};
+        in
+        if kind == "regular" || kind == "symlink" then
+          lib.hasSuffix ".ts" name || lib.hasSuffix ".js" name
+        else if kind == "directory" then
+          builtins.pathExists (piExtensionsDir + "/${name}/index.ts")
+          || builtins.pathExists (piExtensionsDir + "/${name}/index.js")
+        else
+          false;
+    in
+    map (name: piExtensionsDir + "/${name}") (builtins.filter isExtension (builtins.attrNames entries));
+
   piSubagentExample = "${pkgs.pi-coding-agent}/lib/node_modules/@earendil-works/pi-coding-agent/examples/extensions/subagent";
 in
 {
@@ -218,10 +238,7 @@ in
       defaultProvider = "openai";
       defaultModel = "gpt-6-luna";
     };
-    extensions = [
-      piSubagentExample
-      ../dotfiles/pi/extensions
-    ];
+    extensions = [ piSubagentExample ] ++ piLocalExtensions;
     skills = [ ../dotfiles/pi/skills ];
     promptTemplates = [ ../dotfiles/pi/prompts ];
   };
