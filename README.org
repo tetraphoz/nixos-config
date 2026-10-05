@@ -23,7 +23,6 @@ It’s set up for a desktop-focused workflow using *Doom Emacs* and *XMonad*, wi
 │   │   └── packages.el
 │   ├── dunst
 │   ├── hypr
-│   │   ├── PROGRESS.md
 │   │   ├── README.md
 │   │   ├── hyprland.conf
 │   │   ├── hyprsunset.conf
@@ -32,6 +31,7 @@ It’s set up for a desktop-focused workflow using *Doom Emacs* and *XMonad*, wi
 │   │   ├── scratchpad
 │   │   ├── screenshot
 │   │   ├── toggle-border
+│   │   ├── virtual-output
 │   │   └── window-picker
 │   ├── kitty
 │   ├── mpd

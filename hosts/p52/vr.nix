@@ -1,8 +1,18 @@
 {
+  lib,
   pkgs,
   ...
 }:
 
+let
+  # WiVRn launches this wrapper for WayVR. NixOS's nvidia-offload is the
+  # equivalent of prime-run; gamemoderun then starts WayVR with GameMode active.
+  wayvrPrimeGamemode = pkgs.writeShellScriptBin "wayvr-prime-gamemode" ''
+    exec /run/current-system/sw/bin/nvidia-offload \
+      ${pkgs.gamemode}/bin/gamemoderun \
+      ${lib.getExe pkgs.wayvr} "$@"
+  '';
+in
 {
   # WiVRn is the OpenXR runtime/streaming server.  WayVR is launched by
   # WiVRn when a headset connects, so it appears in the headset as the
@@ -33,7 +43,7 @@
       json = {
         # The NixOS module converts the package in this list to its absolute
         # executable path in WiVRn's generated JSON configuration.
-        application = [ pkgs.wayvr ];
+        application = [ wayvrPrimeGamemode ];
       };
     };
   };

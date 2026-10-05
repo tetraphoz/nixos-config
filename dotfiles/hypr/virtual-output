@@ -45,6 +45,14 @@ case ${1:-} in
     fi
 
     hyprctl output create headless "$name"
+    created=true
+    cleanup_created_output() {
+      if [[ $created == true ]]; then
+        hyprctl output destroy "$name" >/dev/null 2>&1 || true
+      fi
+    }
+    trap cleanup_created_output EXIT
+
     ready=false
     for _ in {1..50}; do
       if hyprctl monitors -j | jq -e --arg name "$name" 'any(.[]; .name == $name)' >/dev/null; then
@@ -60,7 +68,13 @@ case ${1:-} in
 
     # The generic monitor fallback makes the new output usable immediately;
     # this runtime rule applies the requested mode and scale to this output.
-    hyprctl keyword monitor "$name,$mode,auto,$scale"
+    if ! hyprctl keyword monitor "$name,$mode,auto,$scale"; then
+      echo "Could not configure the new output $name; removing it." >&2
+      exit 1
+    fi
+
+    created=false
+    trap - EXIT
     printf 'Created %s at %s (scale %s). Start or restart WayVR to share it.\n' "$name" "$mode" "$scale"
     ;;
 

@@ -18,7 +18,6 @@ Wayland support for WiVRn/WayVR.
 | `virtual-output` | Lists, creates, configures, and removes runtime headless outputs for XR screens. |
 | `window-picker` | Wofi window selector; `bring` moves the selection to the current workspace. |
 | `toggle-border` | Toggle the compositor border width. |
-| `PROGRESS.md` | Migration notes, validated behavior, and follow-up work. |
 
 Home Manager owns package installation and the generated Hyprpaper, Hypridle,
 and Hyprlock configs in `home/hyprland.nix`. It links Pyprland and Hyprsunset
@@ -69,14 +68,6 @@ number and arrangement of physical or headless outputs.
 
 ## Quest 3, WiVRn, WayVR, and virtual outputs
 
-Breezy Desktop is not the right compositor integration for this setup: its
-[desktop effects](https://github.com/wheaney/breezy-desktop/tree/v2.12.2) target
-KDE Plasma 6 or GNOME and supported XR glasses. The [Breezy maintainer's Quest 3
-compatibility response](https://github.com/wheaney/breezy-desktop/issues/137)
-says Quest 3 is not currently supported and points Quest users toward
-VR-oriented solutions. This host therefore keeps the existing WiVRn + WayVR
-path.
-
 [WayVR](https://github.com/wayvr-org/wayvr) is the VR overlay/screen-capture
 application; it does not create Hyprland outputs. Hyprland 0.55.4 supports
 creating runtime headless outputs.
@@ -113,30 +104,30 @@ headless outputs use the generic fallback unless explicitly configured.
 `$mainMod` is Super. This table lists the session-specific and most-used
 bindings; the config is authoritative.
 
-| Binding | Action |
-| --- | --- |
-| Super+Return / Super+D | Kitty / Wofi app launcher |
-| Super+Q / Super+Shift+Q | Reload / exit Hyprland |
-| Super+Shift+C | Close active window |
-| Super+J/K | Focus down/up |
-| Super+H/L | Adjust master area width |
-| Super+Shift+J/K | Swap window down/up |
-| Super+1…9,0 / Super+Shift+1…9,0 | Switch to / move window to the Nth workspace on the focused output |
+| Binding                                   | Action                                                                            |
+|-------------------------------------------|-----------------------------------------------------------------------------------|
+| Super+Return / Super+D                    | Kitty / Wofi app launcher                                                         |
+| Super+Q / Super+Shift+Q                   | Reload / exit Hyprland                                                            |
+| Super+Shift+C                             | Close active window                                                               |
+| Super+J/K                                 | Focus down/up                                                                     |
+| Super+H/L                                 | Adjust master area width                                                          |
+| Super+Shift+J/K                           | Swap window down/up                                                               |
+| Super+1…9,0 / Super+Shift+1…9,0           | Switch to / move window to the Nth workspace on the focused output                |
 | Super+Left/Right / Super+Shift+Left/Right | Cycle workspaces on this output / move window to previous or next local workspace |
-| Super+N / Super+Ctrl+N | Create a workspace here / move active window to a newly created workspace |
-| Super+W / Super+Shift+W | Focus next / previous output in Hyprland's output order |
-| Super+Ctrl+W / Super+Ctrl+Shift+W | Move active window to next / previous output and follow it |
-| Super+Alt+Arrow / Super+Alt+Shift+Arrow | Focus / move window to the output in that direction |
-| Super+B | Toggle Waybar visibility |
-| Super+A or Super+G | Open window picker; Super+Shift+G brings it to this workspace |
-| Super+Backspace | Toggle terminal scratchpad |
-| Super+Shift+Y | Toggle ncmpcpp scratchpad |
-| Super+Tab | Toggle Pyprland expose overview |
-| Super+Shift+L | Lock screen |
-| Super+Alt+C | Pick a color and copy it |
-| Print / Ctrl+Print | Save a selected region / OCR it to the clipboard |
-| Super+Shift+U | Change wallpaper and Pywal palette |
-| XF86Audio* / XF86MonBrightness* | SwayOSD volume/mute/brightness controls |
+| Super+N / Super+Ctrl+N                    | Create a workspace here / move active window to a newly created workspace         |
+| Super+W / Super+Shift+W                   | Focus next / previous output in Hyprland's output order                           |
+| Super+Ctrl+W / Super+Ctrl+Shift+W         | Move active window to next / previous output and follow it                        |
+| Super+Alt+Arrow / Super+Alt+Shift+Arrow   | Focus / move window to the output in that direction                               |
+| Super+B                                   | Toggle Waybar visibility                                                          |
+| Super+A or Super+G                        | Open window picker; Super+Shift+G brings it to this workspace                     |
+| Super+Backspace                           | Toggle terminal scratchpad                                                        |
+| Super+Shift+Y                             | Toggle ncmpcpp scratchpad                                                         |
+| Super+Tab                                 | Toggle Pyprland expose overview                                                   |
+| Super+Shift+L                             | Lock screen                                                                       |
+| Super+Alt+C                               | Pick a color and copy it                                                          |
+| Print / Ctrl+Print                        | Save a selected region / OCR it to the clipboard                                  |
+| Super+Shift+U                             | Change wallpaper and Pywal palette                                                |
+| XF86Audio* / XF86MonBrightness*           | SwayOSD volume/mute/brightness controls                                           |
 
 `Super+Y` opens the existing media-control submap: press Y to play/pause, P
 for previous, or N for next. Escape leaves the submap.
