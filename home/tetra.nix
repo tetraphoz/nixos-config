@@ -251,7 +251,7 @@ in
       defaultProvider = "openai";
       defaultModel = "gpt-6-luna";
     };
-    extensions = [ piSubagentExample ] ++ piLocalExtensions;
+    extensions = piLocalExtensions;
     skills = [ ../dotfiles/pi/skills ];
     promptTemplates = piLocalPromptTemplates;
   };
@@ -300,6 +300,11 @@ in
 
   # Do not start MPD before the separate media filesystem is available.
   systemd.user.services.mpd.Unit.RequiresMountsFor = [ "/media/music" ];
+
+  # Keep the bundled subagent extension in Pi's conventional discovery path,
+  # not only on the wrapper CLI. Spawned Pi subprocesses bypass that wrapper,
+  # and must discover the extension themselves to delegate recursively.
+  home.file.".pi/agent/extensions/subagent".source = piSubagentExample;
 
   # pi.nix does not currently expose agent definitions as an option; manage
   # them in dotfiles and place them at Pi's conventional discovery location.
