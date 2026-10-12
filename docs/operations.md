@@ -44,11 +44,14 @@ runtime headless outputs. Hyprland workspace IDs remain globally unique;
 selects local workspace slots, and `Super+N` creates a new workspace there.
 Waybar shows each output's own workspace list. `Super+W` / `Super+Shift+W`
 cycles output focus; Super+Ctrl+W moves the active window to the next output, with
-spatial `Super+Alt+Arrow` alternatives. Waybar is positioned at the bottom.
-The Hyprland profile mirrors the main XMonad shortcuts; `Super+Q` reloads Hyprland,
-`Super+Shift+Q` exits, and `Super+Shift+C` closes a window. `Super+Backspace`
-toggles the terminal scratchpad, `Super+Shift+Y` toggles the ncmpcpp scratchpad,
-and `Super+Tab` opens Pyprland's expose overview. `Super+Alt+C` picks a color
+spatial `Super+Alt+Arrow` alternatives. Waybar is positioned at the bottom
+and runs as a user service ordered after PipeWire PulseAudio; systemd restarts
+it after a crash. The Hyprland profile mirrors the main XMonad shortcuts;
+`Super+Q` reloads Hyprland, `Super+Shift+Q` restarts Waybar, and
+`Super+Shift+C` closes a window.
+`Super+Backspace` toggles the terminal scratchpad, `Super+Shift+Y` toggles the
+ncmpcpp scratchpad, and `Super+Tab` opens Pyprland's expose overview.
+`Super+Alt+C` picks a color
 with hyprpicker; Print saves a region screenshot and Ctrl+Print copies OCR text.
 Hyprsunset applies its configured warm-color profile after 20:30 local time
 and restores neutral color at 07:30. Hardware volume, mic-mute, and brightness

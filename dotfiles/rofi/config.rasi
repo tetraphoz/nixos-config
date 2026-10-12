@@ -1,7 +1,7 @@
 /* Shared Rofi theme; colors are regenerated alongside each wallpaper by pywal. */
 configuration {
     font: "IBM Plex Sans 14";
-    show-icons: false;
+    show-icons: true;
     cycle: true;
     disable-history: false;
     modi: "drun";
@@ -83,6 +83,10 @@ element {
 element selected {
     background-color: @selected-normal-background;
     text-color: @selected-normal-foreground;
+}
+
+element-icon {
+    size: 24px;
 }
 
 scrollbar {

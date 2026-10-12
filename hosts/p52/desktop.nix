@@ -296,7 +296,6 @@ in
       tamzen
       fira-code
       cozette
-      symbola
       cozetteForKitty
     ];
 

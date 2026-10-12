@@ -375,7 +375,7 @@ value passed only through `set-mouse-color`."
   (setenv "OPENAI_API_KEY" (my/auth-source-secret "api.openai.com"))
   :custom
   (aidermacs-default-chat-mode 'architect)
-  (aidermacs-default-model "openai/gpt-5.6-luna"))
+  (aidermacs-default-model "openai/gpt-6.1-luna"))
 
 ;; Use agent-shell with Pi through the ACP adapter.  npx downloads the pinned
 ;; adapter on first use and then reuses npm's local cache.

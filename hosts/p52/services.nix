@@ -6,6 +6,7 @@
 
   # Printing
   services.printing.enable = true;
+  services.avahi.nssmdns4 = true;
 
   # Run Sunshine as the logged-in user in the graphical session so it can
   # capture the active desktop and use that session's audio devices.

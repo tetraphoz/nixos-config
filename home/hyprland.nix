@@ -24,9 +24,23 @@
     pywal16
   ];
 
+  systemd.user.services.waybar = {
+    Unit = {
+      Description = "Waybar status bar for Hyprland";
+      Wants = [ "pipewire-pulse.service" ];
+      After = [ "pipewire-pulse.service" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.waybar}/bin/waybar";
+      Restart = "on-failure";
+      RestartSec = "2s";
+    };
+  };
+
   xdg.configFile."hypr/hyprland.conf".source = ../dotfiles/hypr/hyprland.conf;
   xdg.configFile."pypr/config.toml".source = ../dotfiles/hypr/pyprland.toml;
   xdg.configFile."hypr/hyprsunset.conf".source = ../dotfiles/hypr/hyprsunset.conf;
+  xdg.configFile."wofi".source = ../dotfiles/wofi;
   xdg.configFile."hypr/hyprpaper.conf".text = ''
     # The wallpaper helper uses hyprctl to change outputs through Hyprpaper's IPC socket.
     ipc = on
@@ -210,6 +224,11 @@
     }
     EOF
   '';
+
+  home.file.".local/bin/hypr-restart-waybar" = {
+    source = ../dotfiles/hypr/restart-waybar;
+    executable = true;
+  };
 
   home.file.".local/bin/hypr-window-picker" = {
     source = ../dotfiles/hypr/window-picker;

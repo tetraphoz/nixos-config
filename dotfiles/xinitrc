@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+# Ly's NixOS session wrapper also invokes ~/.xsession for Wayland sessions.
+# Forward the selected desktop command (for example start-hyprland) instead of
+# running this X11 startup script and accidentally launching XMonad without X.
+if [[ "${XDG_SESSION_TYPE:-}" == wayland ]]; then
+  if (($# == 0)); then
+    echo "Ly selected a Wayland session but did not pass its launch command." >&2
+    exit 1
+  fi
+  exec "$@"
+fi
+
 export XDG_SESSION_TYPE=x11
 
 # Lock when logind requests a lock or before suspend/lid sleep.

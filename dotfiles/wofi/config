@@ -1,0 +1,13 @@
+# Match Rofi's drun launcher dimensions and usage.
+show=drun
+prompt=Apps
+width=42%
+lines=9
+columns=1
+location=center
+matching=fuzzy
+insensitive=true
+sort_order=default
+allow_images=true
+image_size=24
+gtk_dark=true

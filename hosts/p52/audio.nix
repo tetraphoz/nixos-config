@@ -45,6 +45,7 @@
 
   environment.systemPackages = with pkgs; [
     pavucontrol
+    pipewire.jack # Provides pw-jack for applications that need explicit PipeWire-JACK loading.
     qjackctl
     crosspipe
     easyeffects

@@ -1,0 +1,72 @@
+/* Match dotfiles/rofi/config.rasi; colors come from pywal's shared cache. */
+* {
+    font-family: "IBM Plex Sans";
+    font-size: 14px;
+}
+
+window {
+    background-color: --wofi-color0;
+    color: --wofi-color7;
+    border: 1px solid --wofi-color2;
+    border-radius: 14px;
+}
+
+#outer-box {
+    padding: 16px;
+}
+
+#input {
+    margin: 0 0 10px 0;
+    padding: 10px 12px;
+    color: --wofi-color7;
+    background-color: --wofi-color0;
+    border: 1px solid --wofi-color2;
+    border-radius: 10px;
+    box-shadow: none;
+}
+
+#input:focus {
+    box-shadow: none;
+}
+
+#scroll {
+    margin: 0;
+    background-color: transparent;
+}
+
+#inner-box {
+    padding: 0;
+    background-color: transparent;
+}
+
+#entry {
+    margin: 2px 0;
+    padding: 9px 11px;
+    color: --wofi-color7;
+    background-color: transparent;
+    border-radius: 8px;
+}
+
+#entry:selected {
+    color: --wofi-color7;
+    background-color: --wofi-color2;
+}
+
+#text {
+    color: inherit;
+    margin-left: 2px;
+}
+
+#text:selected {
+    color: --wofi-color7;
+}
+
+scrollbar {
+    background-color: transparent;
+}
+
+scrollbar slider {
+    min-width: 4px;
+    background-color: --wofi-color2;
+    border-radius: 4px;
+}

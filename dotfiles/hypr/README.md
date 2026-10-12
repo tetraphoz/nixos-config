@@ -28,7 +28,11 @@ shared palette is generated at `~/.cache/wal/` by Pywal.
 
 - **Waybar** is the bottom status bar. Its modules include workspaces, active
   window, clock, MPRIS, brightness, CPU/memory/temperature, network, audio,
-  battery, and tray.
+  battery, and tray. A systemd user service starts it after PipeWire PulseAudio
+  and restarts it after crashes.
+- **Wofi** is the Hyprland app launcher. Its `../wofi` config matches Rofi's
+  font, dimensions, spacing, and pywal-selected colors; both follow the same
+  wallpaper-generated palette.
 - **Pyprland** uses Hyprland IPC (not a version-coupled native plugin ABI) for
   the dropdown `kitty` terminal and `ncmpcpp` window, plus the expose overview.
   Its daemon is started with the session; its config lives at
@@ -107,7 +111,7 @@ bindings; the config is authoritative.
 | Binding                                   | Action                                                                            |
 |-------------------------------------------|-----------------------------------------------------------------------------------|
 | Super+Return / Super+D                    | Kitty / Wofi app launcher                                                         |
-| Super+Q / Super+Shift+Q                   | Reload / exit Hyprland                                                            |
+| Super+Q / Super+Shift+Q                   | Reload Hyprland / restart Waybar                                                   |
 | Super+Shift+C                             | Close active window                                                               |
 | Super+J/K                                 | Focus down/up                                                                     |
 | Super+H/L                                 | Adjust master area width                                                          |
